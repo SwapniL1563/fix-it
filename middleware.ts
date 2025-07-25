@@ -1,5 +1,6 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "./lib/prisma";
 
 export async function middleware(req:NextRequest) {
     const token = await getToken({ req, secret:process.env.NEXTAUTH_SECRET});
@@ -16,11 +17,11 @@ export async function middleware(req:NextRequest) {
         return NextResponse.redirect(new URL("/login",req.url));
     }
 
-    if (pathname.startsWith("/dashboard/technician") && token?.role !== "TECHNICIAN") {
+    if (pathname.startsWith("/dashboard/admin") && token?.role !== "ADMIN") {
     return NextResponse.redirect(new URL("/", req.url));
     }
-
-    if (pathname.startsWith("/dashboard/admin") && token?.role !== "ADMIN") {
+    
+    if (pathname.startsWith("/dashboard/technician") && token?.role !== "TECHNICIAN") {
     return NextResponse.redirect(new URL("/", req.url));
     }
 

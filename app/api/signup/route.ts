@@ -5,10 +5,10 @@ import bcrypt from 'bcrypt'
 export async function POST(req:NextRequest) {
    try {
      const body = await req.json();
-    const { name , email , password , role, city , address} = body;
+    const { name , email , password , role, city , address , bio, serviceId } = body;
     
     // check if all required fields are present
-    if(!name || !email || !password) {
+    if(!name || !email || !password || !role || !city) {
         return NextResponse.json({
             error: "Missing required fields"
         } , { status : 400 })
@@ -16,7 +16,7 @@ export async function POST(req:NextRequest) {
 
     // if present then check if user exists with same email
     const existingUser = await prisma.user.findUnique({
-        where:{ email}
+        where:{ email }
     })
 
     if(existingUser) {
@@ -33,6 +33,29 @@ export async function POST(req:NextRequest) {
             name,email,password:hashedPwd,role,city,address
         }
     })
+
+    if(role === "TECHNICIAN") {
+        if(!serviceId || !bio) {
+            return NextResponse.json({error:"Technician details missing"},{ status:400})
+        }
+
+
+        // also making sure service exists
+        const service = await prisma.service.findUnique({ where:{ id: serviceId}});
+        if(!service) {
+           return NextResponse.json({error:"TInvalid services selected"},{ status:400})  
+        }
+
+        // if exists then store in technician table
+        await prisma.technician.create({
+            data:{
+                userId:newUser.id,
+                serviceId:service.id,
+                bio,
+                verified:false,
+            }
+        })
+    }
 
     return NextResponse.json({ user:newUser } , { status : 200})
 
