@@ -1,5 +1,10 @@
 "use client"
 
+import BookingCancelModal from "@/components/BookingCancelModal";
+import BookingCardCustomer from "@/components/BookingCardCustomer";
+import BookingCustomerFilter from "@/components/BookingCustomerFilter";
+import BookingModal from "@/components/BookingModal";
+import BookingStatsCustomer from "@/components/BookingStatsCustomer";
 import axios from "axios";
 import { useEffect, useState } from "react"
 
@@ -11,6 +16,7 @@ interface Technician {
       name:string,
       email:string,
       city:string,
+      address:string,
    },
    service:{
       name:string
@@ -22,11 +28,37 @@ interface Services {
    id:string,
 }
 
+interface Booking {
+  id: string;
+  date: string;
+  description: string;
+  status: string;
+  technician: {
+    user: {
+      name: string;
+      email: string;
+      city: string;
+      address:string;
+    };
+    service: {
+      name: string;
+    };
+  };
+}
+
 export default function CustomerDashboard(){
    const [technicians,setTechnician] = useState<Technician[]>([]);
    const [services,setServices] = useState<Services[]>([]);
    const [filters,setFilters] = useState({serviceId:"",city:""});
    const [loading,setLoading] = useState(false);
+   const [selectedTech,setSelectedTech] = useState<string | null>(null);
+   const [bookings,setBookings] = useState<Booking[]>([]);
+   const [bookingsLoading,setBookingsLoading] = useState(true);
+   const [search, setSearch] = useState("");
+   const [statusFilter, setStatusFilter] = useState(""); 
+   const [showConfirmModal, setShowConfirmModal] = useState(false);
+   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+
 
    // fetch all services
    useEffect(()=> {
@@ -58,10 +90,46 @@ export default function CustomerDashboard(){
 
    useEffect(()=> {
       fetchTechnicians()
+   },[]);
+
+   const fetchBookings = async () => {
+      setBookingsLoading(true);
+      try{
+         const res = await axios.get("/api/bookings");
+         setBookings(res.data);
+      } catch(error){
+         console.error("Error fetching bookings",error);
+      } finally {
+         setBookingsLoading(false);
+      }
+   }
+
+   useEffect(()=> {
+      fetchBookings();
    },[])
+
+   const filteredBookings = bookings.filter((item)=> {
+      return ( 
+         (statusFilter === "" || item.status === statusFilter) && (
+         item.technician.user.name.toLowerCase().includes(search.toLowerCase()) || item.technician.user.city.toLowerCase().includes(search.toLowerCase())
+      ))
+   })
+
+   const handleCancelClick = (id:string) => {
+      setSelectedBookingId(id);
+      setShowConfirmModal(true);
+   };
+
+   const confirmCancel = async () => {
+      if(!selectedBookingId) return;
+      await axios.patch(`/api/bookings/${selectedBookingId}`,{status : "CANCELLED"});
+      fetchBookings();
+   }
    return (
       <div>
          <h1>Customer Dashboard</h1>
+
+         <BookingStatsCustomer bookings={bookings} />
 
          <div className="bg-red-100">
             <select title="filters" value={filters.serviceId} onChange={(e) => setFilters({ 
@@ -99,15 +167,53 @@ export default function CustomerDashboard(){
                            <h2>{item.user.name}</h2>
                            <p>{item.user.email}</p>
                            <p>{item.user.city}</p>
+                           <p>{item.user.address}</p>
                            <p>{item.bio}</p>
                         </div>
 
-                        <button>Book appointment</button>
+                        <button onClick={() => setSelectedTech(item.id)}>Book appointment</button>
                      </div>
                   ))}
                </div>
             )
          }
+
+         { selectedTech && (
+            <BookingModal technicianId={selectedTech}
+            onClose={()=> setSelectedTech(null)}
+            onBooked={()=> fetchTechnicians()}/>
+         )}
+
+         <div>
+            <h2>Your Previous Bookings</h2>
+
+            <BookingCustomerFilter status={statusFilter} onStatusChange={setStatusFilter} search={search} onSearchChange={setSearch}/>
+            {bookingsLoading ? ( 
+               <p>Loading bookings...</p>
+            ): filteredBookings.length === 0 ? (
+               <p>No previos bookings</p>
+            ) : (
+               <div>
+                  {
+                     filteredBookings.map((bookings)=> (
+                        <BookingCardCustomer  
+                        key={bookings.id} 
+                        id={bookings.id}
+                        date={bookings.date}
+                        status={bookings.status}
+                        description={bookings.description}
+                        service={bookings.technician.service.name}
+                        technician={bookings.technician.user}
+                        onCancel={() => handleCancelClick(bookings.id)}
+                         />
+                     ))}
+               </div>
+            )}
+         </div>
+         {showConfirmModal && (
+            <BookingCancelModal onConfirm={confirmCancel} 
+            onClose={() =>setShowConfirmModal(false)}/>
+         )}
       </div>
    )
 }
