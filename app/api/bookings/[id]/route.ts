@@ -1,10 +1,11 @@
+// app/api/bookings/[id]/route.ts
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 
-// update booking status
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -14,37 +15,42 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const { status } = await req.json();
 
   try {
-    // Get booking of the user
     const booking = await prisma.booking.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!booking) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
 
-    // customer cancelling logic
+    // CUSTOMER logic
     if (session.user.role === "CUSTOMER") {
-      // Only allow cancelling own booking & only if status is PENDING
       if (booking.customerId !== session.user.id) {
         return NextResponse.json({ error: "Not your booking" }, { status: 403 });
       }
-
       if (status !== "CANCELLED" || booking.status !== "PENDING") {
         return NextResponse.json({ error: "Invalid cancellation request" }, { status: 400 });
       }
     }
 
-    // technician booking update logic
+    // TECHNICIAN logic
     if (session.user.role === "TECHNICIAN") {
-      if (booking.technicianId !== session.user.id) {
+      const tech = await prisma.technician.findUnique({
+        where: { userId: session.user.id },
+      });
+
+      if (!tech) {
+        return NextResponse.json({ error: "Technician record not found" }, { status: 404 });
+      }
+
+      if (booking.technicianId !== tech.id) {
         return NextResponse.json({ error: "Not your booking" }, { status: 403 });
       }
     }
 
-    // update the booking status
+    // Update booking
     const updated = await prisma.booking.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
     });
 

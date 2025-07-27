@@ -26,15 +26,14 @@ export async function GET(req:NextRequest,{params}: { params: Promise< {id:strin
     }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, context: { params: Promise< { id: string }> }) {
   try {
+    const { id } = await context.params;
     const { verified } = await req.json();
-
-    console.log("PATCH request received for ID:", params.id, "Verified:", verified);
 
     // Check if technician exists
     const tech = await prisma.technician.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!tech) {
@@ -43,7 +42,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
     // Update verification
     const updatedTechnician = await prisma.technician.update({
-      where: { id: params.id },
+      where: {id },
       data: { verified },
     });
 
