@@ -7,10 +7,20 @@ export async function GET() {
       include: {
         user: true,
         service: true,
+        reviews:true,
       },
     });
 
-    return NextResponse.json(technicians);
+    const technicianWithRatings = technicians.map((tech)=> {
+      const avg = tech.reviews.length > 0 ? tech.reviews.reduce((sum,r) => sum + r.rating , 0) / tech.reviews.length : 0;
+      return {
+      ...tech,
+      avgRating:avg.toFixed(1) 
+      }
+    })
+
+    return NextResponse.json(technicianWithRatings);
+
   } catch (err) {
     console.error("Error fetching technicians:", err);
     return NextResponse.json(

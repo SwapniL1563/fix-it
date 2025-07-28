@@ -6,6 +6,7 @@ import axios from "axios";
 import TechnicianStats from "@/components/BookingStatsTechnician";
 import BookingFilter from "@/components/BookingTechnicianFilter";
 import BookingCardTechnician from "@/components/BookingCardTechnician";
+import StarRating from "@/components/StarRating";
 
 interface Booking {
   id:string,
@@ -26,13 +27,15 @@ export default function TechnicianDashboard() {
   const [bookings,setBookings] = useState<Booking[]>([]);
   const [search,setSearch] = useState("");
   const [statusFilter,setStatusFilter] = useState("")
+  const [avgRating,setAvgRating] = useState<string>(0);
 
   // fetch technician bookings
   const fetchBookings = async () => {
     setLoading(true);
     try {
       const res = await axios.get("/api/bookings");
-      setBookings(res.data);
+      setBookings(res.data.bookings);
+      setAvgRating(res.data.avgRating);
     } catch (error) {
       console.error("Error fetching bookings",error);
     } finally {
@@ -81,6 +84,9 @@ export default function TechnicianDashboard() {
   return (
     <div>
       <h1>Technician Dashboard</h1>
+
+      <div>Your Average Rating: <span>
+        <StarRating rating={parseFloat(avgRating)}/>{avgRating}</span></div>
       <TechnicianStats bookings={bookings}/>
 
       <BookingFilter status={statusFilter} onStatusChange={setStatusFilter} search={search} onSearchChange={setSearch}/>

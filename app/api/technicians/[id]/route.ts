@@ -8,7 +8,8 @@ export async function GET(req:NextRequest,{params}: { params: Promise< {id:strin
         where:{ userId:id},
         include:{
             user:true,
-            service:true
+            service:true,
+            reviews:true,
         }
     })
 

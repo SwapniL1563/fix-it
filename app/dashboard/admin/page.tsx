@@ -11,6 +11,7 @@ interface Technician {
   id: string;
   bio: string;
   verified: boolean;
+  avgRating:string;
   user: {
     name: string;
     email: string;

@@ -1,8 +1,12 @@
+import { useState } from "react";
+import ReviewModal from "./ReviewModal";
+
 interface BookingCardCustomerProps {
   id:string;
   date: string;
   status: string;
   technician: {
+    id:string;
     name: string;
     email: string;
     city: string;
@@ -11,6 +15,7 @@ interface BookingCardCustomerProps {
   service: string;
   description: string;
   onCancel:(id:string) => void;
+  reviewExists:boolean;
 }
 
 export default function BookingCardCustomer({
@@ -20,8 +25,10 @@ export default function BookingCardCustomer({
   technician,
   service,
   description,
+  reviewExists,
   onCancel
 }: BookingCardCustomerProps) {
+  const [ showReviewModal,setShowReviewModal] = useState(false)
   return (
     <div className="border p-4 rounded bg-white shadow">
       <h3 className="font-semibold">{technician.name}</h3>
@@ -36,6 +43,20 @@ export default function BookingCardCustomer({
 
       { status === "PENDING" && (
         <button onClick={() => onCancel(id)}>Cancel Booking</button>
+      )}
+
+      {status === "COMPLETED" && !reviewExists && (
+        <button onClick={()=>setShowReviewModal(true)}>Review</button>
+      )}
+
+      {showReviewModal && (
+        <ReviewModal 
+        bookingId={id} 
+        technicianId={technician.id}
+        technicianName={technician.name}
+        onClose={()=> setShowReviewModal(false)}
+        onSuccess={()=> window.location.reload()}
+        />
       )}
     </div>
   );

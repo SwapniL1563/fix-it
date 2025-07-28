@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import StarRating from "./StarRating";
 
 interface Technician {
   id: string;
   bio: string;
   verified: boolean;
+  avgRating:string;
   user: { name: string; email: string; city: string , address:string };
   service: { name: string };
 }
@@ -102,6 +104,7 @@ export default function AdminTechnicians({
               <p>Service: {tech.service.name}</p>
               <p>Status: {tech.verified ? "Verified" : "Pending"}</p>
               <p className="text-sm mt-2">{tech.bio}</p>
+              <StarRating rating={parseFloat(tech.avgRating)} />
             </div>
 
             {!tech.verified && (

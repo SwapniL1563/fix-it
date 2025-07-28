@@ -19,10 +19,26 @@ export async function GET(req:NextRequest) {
         } , include:{
             user:true,
             service:true,
+            reviews:{
+                select:{
+                    rating:true
+                }
+            },
         }
      });
 
-     return NextResponse.json(technician)
+     const technicianWithRatings = technician.map((tech)=> {
+        const ratings = tech.reviews.map((r) => r.rating);
+      const avgRating = ratings.length
+        ? ratings.reduce((a, b) => a + b, 0) / ratings.length
+        : 0;
+      return {
+        ...tech,
+        avgRating: parseFloat(avgRating.toFixed(1)),
+      };
+    })
+
+    return NextResponse.json(technicianWithRatings);
     } catch(error) {
         return NextResponse.json({ error: "Failed to fetch technicians"} , { status: 500})
     }

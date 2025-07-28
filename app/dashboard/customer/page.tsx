@@ -5,6 +5,7 @@ import BookingCardCustomer from "@/components/BookingCardCustomer";
 import BookingCustomerFilter from "@/components/BookingCustomerFilter";
 import BookingModal from "@/components/BookingModal";
 import BookingStatsCustomer from "@/components/BookingStatsCustomer";
+import StarRating from "@/components/StarRating";
 import axios from "axios";
 import { useEffect, useState } from "react"
 
@@ -12,6 +13,7 @@ interface Technician {
    id:string,
    bio:string,
    verified:boolean,
+   avgRating:string,
    user:{
       name:string,
       email:string,
@@ -34,7 +36,9 @@ interface Booking {
   description: string;
   status: string;
   technician: {
+    id:string;
     user: {
+      id:string,
       name: string;
       email: string;
       city: string;
@@ -43,7 +47,8 @@ interface Booking {
     service: {
       name: string;
     };
-  };
+  },
+  review?:{ id:string} | null;
 }
 
 export default function CustomerDashboard(){
@@ -169,6 +174,8 @@ export default function CustomerDashboard(){
                            <p>{item.user.city}</p>
                            <p>{item.user.address}</p>
                            <p>{item.bio}</p>
+                           <p>Rating:{item.avgRating}</p>
+                           <StarRating rating={parseFloat(item.avgRating)} />
                         </div>
 
                         <button onClick={() => setSelectedTech(item.id)}>Book appointment</button>
@@ -203,8 +210,14 @@ export default function CustomerDashboard(){
                         status={bookings.status}
                         description={bookings.description}
                         service={bookings.technician.service.name}
-                        technician={bookings.technician.user}
+                        technician={{
+                         id: bookings.technician.id,
+                         name: bookings.technician.user.name,
+                         email: bookings.technician.user.email,
+                         city: bookings.technician.user.city,
+                         address: bookings.technician.user.address, }}
                         onCancel={() => handleCancelClick(bookings.id)}
+                        reviewExists={!!bookings.review}
                          />
                      ))}
                </div>
