@@ -35,22 +35,23 @@ export default function BookingModal({ technicianId, onClose, onBooked }: Bookin
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+    <div className="fixed inset-0 bg-black/90 flex justify-center items-center z-50">
+      <div className="bg-[#0b0b0b] p-6 rounded-lg border shadow-lg w-full max-w-md ">
         <h2 className="text-lg font-bold mb-4">Book Appointment</h2>
-
+        
+        <h2 className="text-gray-400 mb-2">Select Date & Time:</h2>
         <input
           type="datetime-local"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="border p-2 w-full mb-3"
+          className="border p-2 w-full mb-3 text-gray-400 outline-none custom-datetime"
         />
 
         <textarea
-          placeholder="Description (optional)"
+          placeholder="Specify the issue or problem occurred"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="border p-2 w-full mb-3"
+          className="border p-2 w-full mb-3 outline-none"
         />
 
         <div className="flex justify-end gap-3">
@@ -60,7 +61,7 @@ export default function BookingModal({ technicianId, onClose, onBooked }: Bookin
           <button
             onClick={createBooking}
             disabled={loading}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
+            className="px-4 py-2 bg-[#ff7600] text-black font-medium rounded"
           >
             {loading ? "Booking..." : "Confirm"}
           </button>

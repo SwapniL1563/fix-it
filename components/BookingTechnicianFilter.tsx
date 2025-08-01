@@ -12,7 +12,7 @@ export default function BookingFilter({
   onSearchChange,
 }: BookingFilterProps) {
   return (
-    <div className="flex gap-4 mb-6">
+    <div className="flex gap-4">
       <select
         value={status}
         onChange={(e) => onStatusChange(e.target.value)}
