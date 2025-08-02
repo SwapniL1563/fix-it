@@ -1,36 +1,36 @@
-"use client"
+"use client";
 
 interface TechnicianStatsProps {
-    bookings:Booking[];
+  bookings: Booking[];
 }
 
-export default function TechnicianStats({ bookings}: TechnicianStatsProps){
-    return (
-        <div className="grid grid-cols-5">
-            <div className="bg-red-100 border">
-                <p>{bookings.length}</p>
-                <p>Total</p>
-            </div>
+export default function TechnicianStats({ bookings }: TechnicianStatsProps) {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 py-2">
+      <div className="bg-[#0b0b0b] px-4 py-5 rounded-md flex flex-col gap-1 border border-[#181818] hover:border-[#ff7600]/20 transition">
+        <p className="text-2xl md:text-3xl text-[#ff7600] font-semibold">{bookings.length}</p>
+        <p className="text-sm md:text-base text-gray-200">Total Bookings</p>
+      </div>
 
-            <div className="bg-red-100 border">
-                <p>{bookings.filter(b => b.status === "PENDING").length}</p>
-                <p>Pending</p>
-            </div>
+      <div className="bg-[#0b0b0b] px-4 py-5 rounded-md flex flex-col gap-1 border border-[#181818] hover:border-[#ff7600]/20 transition">
+        <p className="text-2xl md:text-3xl text-[#ff7600] font-semibold">{bookings.filter(b => b.status === "PENDING").length}</p>
+        <p className="text-sm md:text-base text-gray-200">Pending Bookings</p>
+      </div>
 
-            <div className="bg-red-100 border">
-                <p>{bookings.filter(b => b.status === "ACCEPTED").length}</p>
-                <p>ACCEPTED</p>
-            </div>
+      <div className="bg-[#0b0b0b] px-4 py-5 rounded-md flex flex-col gap-1 border border-[#181818] hover:border-[#ff7600]/20 transition">
+        <p className="text-2xl md:text-3xl text-[#ff7600] font-semibold">{bookings.filter(b => b.status === "ACCEPTED").length}</p>
+        <p className="text-sm md:text-base text-gray-200">Accepted Bookings</p>
+      </div>
 
-            <div className="bg-red-100 border">
-                <p>{bookings.filter(b => b.status === "COMPLETED").length}</p>
-                <p>COMPLETED</p>
-            </div>
+      <div className="bg-[#0b0b0b] px-4 py-5 rounded-md flex flex-col gap-1 border border-[#181818] hover:border-[#ff7600]/20 transition">
+        <p className="text-2xl md:text-3xl text-[#ff7600] font-semibold">{bookings.filter(b => b.status === "COMPLETED").length}</p>
+        <p className="text-sm md:text-base text-gray-200">Completed Bookings</p>
+      </div>
 
-            <div className="bg-red-100 border">
-                <p>{bookings.filter(b => b.status === "CANCELLED").length}</p>
-                <p>CANCELLED</p>
-            </div>
-        </div>
-    )
+      <div className="bg-[#0b0b0b] px-4 py-5 rounded-md flex flex-col gap-1 border border-[#181818] hover:border-[#ff7600]/20 transition">
+        <p className="text-2xl md:text-3xl text-[#ff7600] font-semibold">{bookings.filter(b => b.status === "CANCELLED").length}</p>
+        <p className="text-sm md:text-base text-gray-200">Cancelled Bookings</p>
+      </div>
+    </div>
+  );
 }

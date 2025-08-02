@@ -1,34 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(req:NextRequest) {
-    const { searchParams } = new URL(req.url);
-    const serviceId = searchParams.get("serviceId");
-    const city = searchParams.get("city")
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const serviceId = searchParams.get("serviceId");
+  const search = searchParams.get("search");
 
-    try {
-     const technician = await prisma.technician.findMany({
-        where:{
-            verified:true,
-            ...(serviceId && { serviceId }),
-            ...(city && {
-                user:{
-                    city:{ contains: city , mode:"insensitive"}
-                }
-            })
-        } , include:{
-            user:true,
-            service:true,
-            reviews:{
-                select:{
-                    rating:true
-                }
-            },
-        }
-     });
+  try {
+    const technicians = await prisma.technician.findMany({
+      where: {
+        verified: true,
+        ...(serviceId && { serviceId }),
+        ...(search && {
+          OR: [
+          { user: { name: { contains: search, mode: "insensitive" } } },
+          { user: { city: { contains: search, mode: "insensitive" } } },
+          ]
+        }),
+      },
+      include: {
+        user: true,
+        service: true,
+        reviews: {
+          select: {
+            rating: true,
+          },
+        },
+      },
+    });
 
-     const technicianWithRatings = technician.map((tech)=> {
-        const ratings = tech.reviews.map((r) => r.rating);
+    const techniciansWithRatings = technicians.map((tech) => {
+      const ratings = tech.reviews.map((r) => r.rating);
       const avgRating = ratings.length
         ? ratings.reduce((a, b) => a + b, 0) / ratings.length
         : 0;
@@ -36,10 +38,13 @@ export async function GET(req:NextRequest) {
         ...tech,
         avgRating: parseFloat(avgRating.toFixed(1)),
       };
-    })
+    });
 
-    return NextResponse.json(technicianWithRatings);
-    } catch(error) {
-        return NextResponse.json({ error: "Failed to fetch technicians"} , { status: 500})
-    }
+    return NextResponse.json(techniciansWithRatings);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to fetch technicians" },
+      { status: 500 }
+    );
+  }
 }

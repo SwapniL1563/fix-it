@@ -8,9 +8,7 @@ import BookingCancelModal from "@/components/BookingCancelModal";
 import StarRating from "@/components/StarRating";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { getSession, useSession } from "next-auth/react";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import Image from "next/image";
+import { useSession } from "next-auth/react";
 import { BookingCardSkeleton, TechnicianCardSkeleton } from "./SkeletonLoaderTechnicianCard";
 
 interface Technician {
@@ -56,9 +54,9 @@ interface Booking {
 }
 
 export default function CustomerDashboardContent() {
-  const [technicians, setTechnician] = useState<Technician[]>([]);
+  const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [services, setServices] = useState<Services[]>([]);
-  const [filters, setFilters] = useState({ serviceId: "", city: "" });
+  const [filters, setFilters] = useState({ serviceId: "", search: "" });
   const [loading, setLoading] = useState(false);
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -67,7 +65,7 @@ export default function CustomerDashboardContent() {
   const [statusFilter, setStatusFilter] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
-  const { data:session } = useSession();
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -82,10 +80,10 @@ export default function CustomerDashboardContent() {
     try {
       const params = new URLSearchParams();
       if (filters.serviceId) params.append("serviceId", filters.serviceId);
-      if (filters.city) params.append("city", filters.city);
+      if (filters.search) params.append("search", filters.search);
 
       const res = await axios.get(`/api/technicians/filtered?${params.toString()}`);
-      setTechnician(res.data);
+      setTechnicians(res.data);
     } catch (error) {
       console.error("Error fetching technicians", error);
     } finally {
@@ -134,26 +132,21 @@ export default function CustomerDashboardContent() {
 
   return (
     <div className="w-full min-h-full md:p-1 py-2 md:py-4 relative overflow-hidden">
-      <h1 className="md:text-lg px-1  md:mb-1">Welcome back,{" "}{session?.user?.name}</h1>
+      <h1 className="md:text-lg px-1 md:mb-1">Welcome back, {session?.user?.name}</h1>
 
       <BookingStatsCustomer bookings={bookings} />
 
-      <h1 className="md:text-lg px-1 mb-1 md:mb-2 mt-3 md:mt-1">Filter Technicians</h1>
+      <h1 className="md:text-lg px-1 mb-1 md:mb-2 mt-3 md:mt-1">Find Technicians</h1>
       <div className="flex flex-wrap items-center gap-2 rounded-md w-full lg:w-2/3">
-        <select 
+        <select
           title="filters"
           value={filters.serviceId}
-          onChange={(e) =>
-            setFilters({
-              ...filters,
-              serviceId: e.target.value,
-            })
-          }
+          onChange={(e) => setFilters({ ...filters, serviceId: e.target.value })}
           className="p-3 text-[#828282] rounded bg-[#0b0b0b] border border-border w-full md:w-[25%] outline-none"
         >
-          <option className="" value="">All Services</option>
+          <option value="">All Services</option>
           {services.map((s) => (
-            <option className="" value={s.id} key={s.id}>
+            <option key={s.id} value={s.id}>
               {s.name}
             </option>
           ))}
@@ -161,9 +154,9 @@ export default function CustomerDashboardContent() {
 
         <input
           type="text"
-          placeholder="Search by City"
-          value={filters.city}
-          onChange={(e) => setFilters({ ...filters, city: e.target.value })}
+          placeholder="Search by Technician Name or City"
+          value={filters.search}
+          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
           className="p-3 md:p-3 text-sm md:text-base rounded bg-[#0b0b0b] border border-border w-full md:w-1/2 outline-none"
         />
 
@@ -177,21 +170,24 @@ export default function CustomerDashboardContent() {
 
       {loading ? (
         <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-        {Array.from({ length: 6 }).map((_, i) => (
-        <TechnicianCardSkeleton key={i} />
-    ))}
-  </div>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <TechnicianCardSkeleton key={i} />
+          ))}
+        </div>
       ) : technicians.length === 0 ? (
         <p className="">No verified technicians</p>
       ) : (
         <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           {technicians.map((item) => (
-            <div key={item.id} className="p-6 rounded-md bg-[#0b0b0b] border border-[#181818] hover:border-[#ff7600]/20 transition  text-card-foreground shadow">
-              <h2 className="text font-semibold text-[#ff7600]">{item.user.name}</h2>
-              <p><span className="text-[#ff7600] ">email: </span> {item.user.email}</p>
-              <p><span className="text-[#ff7600] ">city: </span>{item.user.city}</p>
-              <p><span className="text-[#ff7600] ">address: </span> {item.user.address}</p>
-              <p><span className="text-[#ff7600] ">bio: </span> {item.bio}</p>
+            <div
+              key={item.id}
+              className="p-6 rounded-md bg-[#0b0b0b] border border-[#181818] hover:border-[#ff7600]/20 transition"
+            >
+              <h2 className="font-semibold text-[#ff7600]">{item.user.name}</h2>
+              <p><span className="text-[#ff7600]">Email:</span> {item.user.email}</p>
+              <p><span className="text-[#ff7600]">City:</span> {item.user.city}</p>
+              <p><span className="text-[#ff7600]">Address:</span> {item.user.address}</p>
+              <p><span className="text-[#ff7600]">Bio:</span> {item.bio}</p>
               <StarRating rating={parseFloat(item.avgRating)} />
               <button
                 onClick={() => setSelectedTech(item.id)}
@@ -222,8 +218,8 @@ export default function CustomerDashboardContent() {
         />
         {bookingsLoading ? (
           <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-           {Array.from({ length: 6 }).map((_, i) => (
-          <BookingCardSkeleton key={i} />
+            {Array.from({ length: 6 }).map((_, i) => (
+              <BookingCardSkeleton key={i} />
             ))}
           </div>
         ) : filteredBookings.length === 0 ? (

@@ -10,7 +10,7 @@ import {
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import { useState } from "react";
-import { Wrench } from "lucide-react";
+import { Handbag, Wrench } from "lucide-react";
 import Link from "next/link";
 
 const linksByRole = {
@@ -34,14 +34,19 @@ const linksByRole = {
 
   TECHNICIAN: [
     {
-      label: "Jobs",
-      href: "/technician/jobs",
-      icon: <IconBrandTabler className="h-5 w-5 shrink-0 text-neutral-200" />,
+      label: "Dashboard",
+      href: "/dashboard/technician",
+      icon: <IconBrandTabler className="h-5 w-5 shrink-0 text-[#ff7600]" />,
     },
     {
-      label: "Profile",
-      href: "/technician/profile",
-      icon: <IconUserBolt className="h-5 w-5 shrink-0 text-neutral-200" />,
+      label: "Jobs",
+      href: "/dashboard/technician/jobs",
+      icon: <Handbag className="h-5 w-5 shrink-0 text-[#ff7600]" />,
+    },
+    {
+      label: "Logout",
+      href: "/",
+      icon: <IconArrowLeft className="h-5 w-5 shrink-0 text-[#ff7600]" />,
     },
   ],
 
