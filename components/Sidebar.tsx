@@ -5,13 +5,14 @@ import {
   IconArrowLeft,
   IconBrandTabler,
   IconHistory,
-  IconSettings,
   IconUserBolt,
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Handbag, Wrench } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const linksByRole = {
   CUSTOMER: [
@@ -76,8 +77,49 @@ export default function SidebarLayout({
   children: React.ReactNode;
   role?: "CUSTOMER" | "TECHNICIAN" | "ADMIN";
 }) {
-  const links = linksByRole[role];
   const [open, setOpen] = useState(false);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(()=> {
+   if (status === "loading") return;
+
+   if(!session?.user){
+    router.replace("/signin");
+    return;
+   }
+
+   if(session.user.role === "TECHNICIAN" && !session.user.verified!) {
+     router.replace("/pending-approval");
+     return;
+   }
+
+   if (session.user.role !== role) {
+      switch (session.user.role) {
+        case "CUSTOMER":
+          router.replace("/dashboard/customer");
+          break;
+        case "TECHNICIAN":
+          router.replace("/dashboard/technician");
+          break;
+        case "ADMIN":
+          router.replace("/dashboard/admin");
+          break;
+      }
+    }
+
+
+  },[session,status,role,router]);
+
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-[#ff7600] font-medium">Loading...</p>
+      </div>
+    );
+  }
+
+  const links = linksByRole[role];
 
   return (
     <div className="flex min-h-screen w-full">
