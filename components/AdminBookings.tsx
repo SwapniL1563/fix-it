@@ -36,13 +36,11 @@ export default function AdminBookings({ bookings, refresh }: Props) {
   const [statusFilter, setStatusFilter] = useState("");
 
   const updateStatus = async (id: string, status: string) => {
-    if (!confirm(`Are you sure you want to mark this booking as ${status}?`))
-      return;
+    if (!confirm(`Are you sure you want to mark this booking as ${status}?`)) return;
     await axios.patch(`/api/bookings/${id}`, { status });
     refresh();
   };
 
-  // Filtered bookings
   const filteredBookings = bookings.filter((b) => {
     const matchesStatus = statusFilter === "" || b.status === statusFilter;
     const searchText = search.toLowerCase();
@@ -55,23 +53,20 @@ export default function AdminBookings({ bookings, refresh }: Props) {
     return matchesStatus && matchesSearch;
   });
 
-  return (
-    <div className="bg-white p-4 rounded shadow mt-6">
-      <h2 className="text-xl font-semibold mb-4">Manage Bookings</h2>
+  const statusColor: Record<string, string> = {
+    PENDING: "bg-yellow-500/20 text-yellow-400 border-yellow-500/40",
+    ACCEPTED: "bg-blue-500/20 text-blue-400 border-blue-500/40",
+    COMPLETED: "bg-green-500/20 text-green-400 border-green-500/40",
+    CANCELLED: "bg-red-500/20 text-red-400 border-red-500/40",
+  };
 
-      {/* Filter UI */}
-      <div className="flex gap-2 mb-4">
-        <input
-          type="text"
-          placeholder="Search by customer or technician"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border p-2 flex-1 rounded"
-        />
+  return (
+    <div className="">
+      <div className="flex gap-2 mb-2">
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="border p-2 rounded"
+          className="p-3 rounded border border-[#181818] bg-[#0b0b0b] text-[#828282] w-[15%]"
         >
           <option value="">All Status</option>
           <option value="PENDING">Pending</option>
@@ -79,32 +74,59 @@ export default function AdminBookings({ bookings, refresh }: Props) {
           <option value="COMPLETED">Completed</option>
           <option value="CANCELLED">Cancelled</option>
         </select>
-      </div>
+       <input
+          type="text"
+          placeholder="Search by customer or technician"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="p-3 rounded border border-[#181818] bg-[#0b0b0b] text-white w-1/2"
+        />
+        </div>
 
       {filteredBookings.length === 0 ? (
-        <p>No bookings found</p>
+        <p className="text-gray-400">No bookings found</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           {filteredBookings.map((b) => (
-            <div key={b.id} className="border rounded p-3 bg-gray-50">
-              <h3 className="font-bold">{b.customer.name}</h3>
-              <p>{b.customer.city}</p>
-              <p>Technician: {b.technician.user.name} ({b.technician.service.name})</p>
-              <p>Date: {new Date(b.date).toLocaleString()}</p>
-              <p>Status: <span className="font-semibold">{b.status}</span></p>
+            <div
+              key={b.id}
+              className="p-5 border border-[#181818] rounded-md bg-[#0b0b0b] hover:border-[#ff7600]/20 transition"
+            >
+              <h3 className="text-[#ff7600] font-semibold">{b.customer.name}</h3>
+              <p className="text-sm text-white">
+                <span className="text-[#ff7600] font-medium">City:</span> {b.customer.city}
+              </p>
+              <p className="text-sm text-white">
+                <span className="text-[#ff7600] font-medium">Technician:</span> {b.technician.user.name} ({b.technician.service.name})
+              </p>
+              <p className="text-sm text-white">
+                <span className="text-[#ff7600] font-medium">Date:</span> {new Date(b.date).toLocaleString()}
+              </p>
 
-              <div className="mt-2 flex gap-2">
+              {b.description && (
+                <p className="italic text-white mt-2 border-l-2 border-[#ff7600] pl-3">
+                  "{b.description}"
+                </p>
+              )}
+
+              <span
+                className={`inline-block mt-3 px-3 py-1 text-xs font-semibold rounded-full border ${statusColor[b.status]}`}
+              >
+                {b.status}
+              </span>
+
+              <div className="flex gap-2 mt-4">
                 {b.status !== "CANCELLED" && b.status !== "COMPLETED" && (
                   <>
                     <button
                       onClick={() => updateStatus(b.id, "COMPLETED")}
-                      className="px-2 py-1 bg-green-600 text-white rounded"
+                      className="px-3 py-2 bg-green-600 rounded text-white hover:bg-green-700"
                     >
                       Mark Completed
                     </button>
                     <button
                       onClick={() => updateStatus(b.id, "CANCELLED")}
-                      className="px-2 py-1 bg-red-600 text-white rounded"
+                      className="px-3 py-2 bg-red-600 rounded text-white hover:bg-red-700"
                     >
                       Cancel
                     </button>
