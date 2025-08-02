@@ -114,7 +114,7 @@ export default function AdminDashboardContent() {
   });
 
   return (
-    <div className="w-full min-h-full py-2 md:py-4 relative overflow-hidden">
+    <div className="w-full min-h-full py-2 md:py-4 relative overflow-hidden ">
         <h1 className="md:text-lg px-1 font-semibold">Welcome back, {session?.user?.name}</h1>
         <AdminStats
         totalUsers={users.length}

@@ -90,11 +90,11 @@ export default function AdminTechnicians({
 
   return (
     <div className="">
-        <div className="flex justify-between items-center mb-2 mt-2">
-        <h1 className="mt-4 px-1 md:text-lg font-semibold">Manage Technicians</h1>
+        <div className="flex flex-col md:flex-row justify-between md:items-center mb-2 mt-2">
+        <h1 className="mt-4 px-1 md:text-lg font-semibold mb-2 md:mb-0">Manage Technicians</h1>
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 bg-[#ff7600] text-black font-medium rounded hover:bg-[#ff6a00] transition"
+          className="px-4 py-2 w-full md:w-auto bg-[#ff7600] text-black text-sm font-medium rounded hover:bg-[#ff6a00] transition"
         >
           Add Technician
         </button>
@@ -146,14 +146,14 @@ export default function AdminTechnicians({
                 <button
                   onClick={() => verifyTech(tech.id)}
                   disabled={loadingId === tech.id}
-                  className="px-3 py-2 bg-[#ff7600] text-white rounded transition"
+                   className="w-full md:w-1/2 text-sm md:text-base md:auto px-4 py-2 text-green-400 border-1 border-green-500/40 bg-green-500/20 font-medium rounded transition"
                 >
                   {loadingId === tech.id ? "Verifying..." : "Verify"}
                 </button>
               )}
               <button
                 onClick={() => deleteTech(tech.id)}
-                className="px-4 py-2 bg-[#ff7600] text-black font-medium rounded transition"
+                className="w-full md:w-1/2 text-sm md:text-base md:auto px-4 py-2 bg-[#ff7600] text-black font-medium rounded transition"
               >
                 Delete
               </button>

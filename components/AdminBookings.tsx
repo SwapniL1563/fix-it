@@ -62,11 +62,11 @@ export default function AdminBookings({ bookings, refresh }: Props) {
 
   return (
     <div className="">
-      <div className="flex gap-2 mb-2">
+      <div className="flex flex-col md:flex-row gap-2 mb-2">
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="p-3 rounded border border-[#181818] bg-[#0b0b0b] text-[#828282] w-[15%]"
+          className="p-3 rounded border border-[#181818] bg-[#0b0b0b] text-[#828282] text-sm md:text-base w-full md:w-[15%]"
         >
           <option value="">All Status</option>
           <option value="PENDING">Pending</option>
@@ -79,7 +79,7 @@ export default function AdminBookings({ bookings, refresh }: Props) {
           placeholder="Search by customer or technician"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="p-3 rounded border border-[#181818] bg-[#0b0b0b] text-white w-1/2"
+          className="p-3 rounded border border-[#181818] bg-[#0b0b0b] text-white text-sm md:text-base w-full md:w-1/2"
         />
         </div>
 
