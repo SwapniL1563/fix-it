@@ -163,7 +163,7 @@ export default function AdminTechnicians({
       </div>
 
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black/90 flex justify-center items-center z-50">
           <div className="bg-[#0b0b0b] border border-[#181818] p-6 rounded-lg shadow-lg w-full max-w-md">
             <h2 className="text-lg font-bold text-white mb-4">
               Add Technician
@@ -174,47 +174,47 @@ export default function AdminTechnicians({
               placeholder="Name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full mb-2 p-2 rounded border border-[#181818] bg-[#0b0b0b] text-white"
+              className="w-full mb-2 p-3 rounded border border-[#181818] bg-[#0b0b0b] text-white outline-none"
             />
             <input
               type="email"
               placeholder="Email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full mb-2 p-2 rounded border border-[#181818] bg-[#0b0b0b] text-white"
+              className="w-full mb-2 p-3 rounded border border-[#181818] bg-[#0b0b0b] text-white outline-none"
             />
             <input
               type="password"
               placeholder="Password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full mb-2 p-2 rounded border border-[#181818] bg-[#0b0b0b] text-white"
+              className="w-full mb-2 p-3 rounded border border-[#181818] bg-[#0b0b0b] text-white outline-none"
             />
             <input
               type="text"
               placeholder="City"
               value={form.city}
               onChange={(e) => setForm({ ...form, city: e.target.value })}
-              className="w-full mb-2 p-2 rounded border border-[#181818] bg-[#0b0b0b] text-white"
+              className="w-full mb-2 p-3 rounded border border-[#181818] bg-[#0b0b0b] text-white outline-none"
             />
             <textarea
               placeholder="Address"
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
-              className="w-full mb-2 p-2 rounded border border-[#181818] bg-[#0b0b0b] text-white"
+              className="w-full mb-1 p-3 rounded border border-[#181818] bg-[#0b0b0b] text-white outline-none"
             />
             <textarea
               placeholder="Bio"
               value={form.bio}
               onChange={(e) => setForm({ ...form, bio: e.target.value })}
-              className="w-full mb-2 p-2 rounded border border-[#181818] bg-[#0b0b0b] text-white"
+              className="w-full mb-1 p-3 rounded border border-[#181818] bg-[#0b0b0b] text-white outline-none"
             />
             <select
               value={form.serviceId}
               onChange={(e) => setForm({ ...form, serviceId: e.target.value })}
-              className="w-full mb-3 p-2 rounded border border-[#181818] bg-[#0b0b0b] text-white"
+              className="w-full mb-2 p-3 rounded border border-[#181818] bg-[#0b0b0b] text-[#828282] outline-none"
             >
-              <option value="">Select Service</option>
+              <option value="" disabled={true}>Select Service</option>
               {services.map((service) => (
                 <option value={service.id} key={service.id}>
                   {service.name}
@@ -225,14 +225,14 @@ export default function AdminTechnicians({
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition"
+                className="px-4 py-2 border border-[#ff7600] text-[#ff7600] font-medium rounded hover:bg-gray-700 transition"
               >
                 Close
               </button>
               <button
                 onClick={addTechnician}
                 disabled={submitting}
-                className="px-4 py-2 bg-[#ff7600] text-black rounded hover:bg-[#ff6a00] transition"
+                className="px-5 py-2 bg-[#ff7600] text-black font-medium rounded hover:bg-[#ff6a00] transition"
               >
                 {submitting ? "Adding..." : "Add"}
               </button>

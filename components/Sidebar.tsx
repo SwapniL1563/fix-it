@@ -53,18 +53,18 @@ const linksByRole = {
   ADMIN: [
     {
       label: "Dashboard",
-      href: "/admin/dashboard",
-      icon: <IconBrandTabler className="h-5 w-5 shrink-0 text-neutral-200" />,
+      href: "/dashboard/admin",
+      icon: <IconBrandTabler className="h-5 w-5 shrink-0 text-[#ff7600]" />,
     },
     {
       label: "Manage Users",
-      href: "/admin/users",
-      icon: <IconUserBolt className="h-5 w-5 shrink-0 text-neutral-200" />,
+      href: "/dashboard/admin/users",
+      icon: <IconUserBolt className="h-5 w-5 shrink-0 text-[#ff7600]" />,
     },
     {
-      label: "Settings",
-      href: "/admin/settings",
-      icon: <IconSettings className="h-5 w-5 shrink-0 text-neutral-200" />,
+      label: "Logout",
+      href: "/",
+      icon: <IconArrowLeft className="h-5 w-5 shrink-0 text-[#ff7600]" />,
     },
   ],
 };
