@@ -37,7 +37,6 @@ export function NavbarDemo() {
   return (
     <div className="sticky w-full z-50">
       <Navbar>
-        {/* Desktop Navigation */}
         <NavBody>
           <NavbarLogo />
           <NavItems items={navItems} />
@@ -53,7 +52,6 @@ export function NavbarDemo() {
           </div>
         </NavBody>
 
-        {/* Mobile Navigation */}
         <MobileNav>
           <MobileNavHeader>
             <NavbarLogo />
@@ -84,7 +82,7 @@ export function NavbarDemo() {
                 router.push("/api/auth/signin")
                 }}
                 variant="primary"
-                className="w-full"
+                className="w-full bg-[#ff7600]"
               >
                 Login
               </NavbarButton>
@@ -94,7 +92,7 @@ export function NavbarDemo() {
                 router.push("/signup")
                 }}
                 variant="primary"
-                className="w-full"
+                className="w-full bg-[#0A0A0A] border-[#ff7600] border text-[#ff7600]"
               >
                 Create Account
               </NavbarButton>
