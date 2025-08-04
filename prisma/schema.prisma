@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+   CUSTOMER
+   TECHNICIAN
+   ADMIN
+}
+
+enum ServiceType {
+  PLUMBING
+  ELECTRICIAN
+  CARPENTRY
+  REPAIR
+  CLEANING
+}
+
+enum BookingStatus {
+  PENDING
+  ACCEPTED
+  COMPLETED
+  CANCELLED
+}
+model User {
+  id          String      @id @default(cuid())
+  name        String   
+  email       String      @unique
+  password    String
+  role        Role        @default(CUSTOMER) 
+  city        String?
+  address     String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  technicians Technician?
+  bookings    Booking[]   @relation("CustomerBookings")
+  review      Review[]
+}
+
+model Technician {
+  id          String     @id @default(cuid())
+  userId      String     @unique
+  serviceId   String
+  bio         String?
+  verified    Boolean    @default(false)
+  rating      Float      @default(0)
+  createdAt   DateTime   @default(now())
+
+  user        User       @relation(fields: [userId],references: [id])
+  service     Service    @relation(fields: [serviceId],references: [id])
+  bookings    Booking[]  @relation("TechnicianBookings")
+  reviews     Review[]
+}
+
+model Service {
+  id            String        @id @default(cuid())
+  name          ServiceType   @unique
+  description   String?
+  technicians   Technician[]
+}
+
+model Booking {
+  id            String         @id @default(cuid())
+  customerId    String  
+  technicianId  String
+  date          DateTime   
+  description   String?
+  status        BookingStatus  @default(PENDING)
+  createdAt     DateTime       @default(now())
+
+  customer      User           @relation("CustomerBookings",fields: [customerId],references: [id])
+  technician    Technician     @relation("TechnicianBookings",fields: [technicianId],references: [id])
+  review        Review?
+}
+
+model Review {
+  id            String         @id @default(cuid())
+  rating        Int
+  comment       String?
+  customerId    String
+  technicianId  String
+  bookingId     String         @unique
+  createdAt     DateTime       @default(now())
+
+  customer      User           @relation(fields: [customerId],references: [id])
+  technician    Technician     @relation(fields: [technicianId],references: [id])
+  booking       Booking        @relation(fields: [bookingId],references: [id])
+}
+
+
+
+
