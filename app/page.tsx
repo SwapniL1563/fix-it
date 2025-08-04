@@ -83,9 +83,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="text-center py-16 bg-[#020202] flex justify-center items-center">
-        <div className="w-2/3 p-10 bg-neutral-950/10 border">
-          <h2 className="text-3xl font-bold text-white">
+      <section className="text-center pt-10 pb-4 md:py-16 bg-[#020202] flex justify-center items-center">
+        <div className="w-[90%] md:w-2/3 p-8 md:p-10 bg-neutral-950/10 border rounded-md">
+          <h2 className="text-xl md:text-3xl font-bold text-white">
           Ready to book your first service?
         </h2>
         <Link
@@ -97,7 +97,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="py-6 text-center text-sm text-gray-500 bg-[#020202] border-t">
+      <footer className="py-6 text-center px-10 md:px-0 text-xs md:text-sm text-gray-400 bg-[#020202] border-t">
         © {new Date().getFullYear()} FixIt. All rights reserved. Made with 🧡 by Swapnil.
       </footer>
     </main>
