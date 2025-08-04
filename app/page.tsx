@@ -9,7 +9,7 @@ export default function Home() {
       <NavbarDemo/>
       <div className="z-20 relative">
       <main className="min-h-screen min-w-full  text-gray-800 ">
-      <section className="bg-black min-w-full text-center py-44 px-6 flex flex-col justify-center overflow-hidden  items-center relative">
+      <section className="bg-black min-w-full text-center pt-44 pb-32  md:py-44 px-6 flex flex-col justify-center overflow-hidden  items-center relative">
         {/* <Image src="/bgbg.png" className="absolute w-full h-full z-0 opacity-30" alt="img"  height={1000} width={1000}/> */}
       <video
       src="/bg-vid.mp4"
@@ -43,8 +43,8 @@ export default function Home() {
       </section>
 
       <section className="py-16 relative bg-[#020202]">
-        <h2 className="text-3xl font-bold text-center mb-12 text-white">Our Services</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3 max-w-5xl mx-auto z-20">
+        <h2 className="text-[1.65rem] md:text-3xl font-bold text-center mb-4 md:mb-12 text-white">Our Services</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 md:gap-3 w-[90%] md:max-w-5xl mx-auto z-20">
           {[
             { name: "Plumbing", icon: "🔧" },
             { name: "Electrician", icon: "💡" },
@@ -54,18 +54,18 @@ export default function Home() {
           ].map((service) => (
             <div
               key={service.name}
-              className="bg-neutral-950/10 border rounded-md shadow hover:shadow-md hover:border-[#ff7600]/30 p-10 text-center transition"
+              className="bg-neutral-950/10 border rounded-md shadow hover:shadow-md hover:border-[#ff7600]/30 p-8 md:p-10 text-center transition"
             >
-              <div className="text-4xl mb-2">{service.icon}</div>
-              <h3 className="text-lg font-semibold text-white">{service.name}</h3>
+              <div className="text-3xl md:text-4xl mb-2">{service.icon}</div>
+              <h3 className="text-base md:text-lg font-semibold text-white">{service.name}</h3>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="py-16 px-6 text-center bg-[#020202]">
-        <h2 className="text-3xl font-bold mb-8 text-white">How It Works</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-5xl mx-auto ">
+      <section className="py-16 md:px-6 text-center bg-[#020202]">
+        <h2 className="text-[1.65rem] md:text-3xl font-bold mb-4 md:mb-8 text-white">How It Works</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 w-[90%]  md:max-w-5xl mx-auto ">
           {[
             { step: "1", title: "Choose Service", desc: "Choose your service and technician based on location and need." },
             { step: "2", title: "Get Technician", desc: "We assign a verified technician for your request." },
@@ -73,11 +73,11 @@ export default function Home() {
           ].map((item) => (
             <div
               key={item.step}
-              className="bg-neutral-950/10 border hover:border-[#ff7600]/30 rounded-md shadow p-10 hover:shadow-md transition"
+              className="bg-neutral-950/10 border hover:border-[#ff7600]/30 rounded-md shadow p-8 md:p-10 hover:shadow-md transition sm:w-[90%]"
             >
-              <div className="text-2xl font-bold text-orange-500 mb-2">Step {item.step}</div>
-              <h3 className="text-lg font-semibold mb-2 text-white">{item.title}</h3>
-              <p className="text-gray-400">{item.desc}</p>
+              <div className="text-xl md:text-2xl font-bold text-orange-500 mb-2">Step {item.step}</div>
+              <h3 className="md:text-lg font-semibold mb-2 text-white">{item.title}</h3>
+              <p className="text-sm md:text-base text-gray-400">{item.desc}</p>
             </div>
           ))}
         </div>
