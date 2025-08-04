@@ -1,6 +1,6 @@
 "use client"
 import { NavbarDemo } from "@/components/Navbar";
-import Image from "next/image";
+import Testimonials from "@/components/Testimonials"
 import Link from "next/link";
 
 export default function Home() {
@@ -63,7 +63,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 md:px-6 text-center bg-[#020202]">
+      <section className="pt-10 pb-8 md:px-6 text-center bg-[#020202]">
         <h2 className="text-[1.65rem] md:text-3xl font-bold mb-4 md:mb-8 text-white">How It Works</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 w-[90%] max-w-5xl mx-auto ">
           {[
@@ -83,9 +83,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="text-center pt-10 pb-4 md:py-4 bg-[#020202] flex justify-center items-center">
+      <section className="">
+        <Testimonials/>
+      </section>
+
+      <section className="text-center pt-8 pb-4 md:pt-10 md:pb-3 bg-[#020202] flex justify-center items-center">
         <div className="w-[90%] md:w-2/3 p-8 md:p-12 bg-neutral-950/10 border rounded-md">
-          <h2 className="text-xl md:text-3xl font-bold text-white">
+          <h2 className="text-lg md:text-3xl font-bold text-white">
           Ready to book your first service?
         </h2>
         <Link
