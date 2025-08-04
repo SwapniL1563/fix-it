@@ -31,19 +31,19 @@ export default function Home() {
             href="/signup"
             className="px-5 md:px-6 py-3 text-sm md:text-base bg-[#ff7600] text-black font-medium rounded-md shadow hover:bg-[#ff6a00] transition"
           >
-            Get Started
+            Create New Account
           </Link>
           <Link
-            href="/services"
+            href="/api/auth/signin"
             className="px-5 md:px-6 py-3 text-sm md:text-base border md:border-2 bg-black/10 font-medium border-[#ff7600] text-[#ff7600] rounded-md transition"
           >
-            Explore Services
+            Book Now
           </Link>
         </div>
       </section>
 
-      <section className="py-16 relative bg-[#020202]">
-        <h2 className="text-[1.65rem] md:text-3xl font-bold text-center mb-4 md:mb-8 text-white">Our Services</h2>
+      <section id="services" className="py-16 relative bg-[#020202]">
+        <h2 className="text-[1.65rem] md:text-[1.75rem] font-bold text-center mb-4 md:mb-8 text-white">Our Services</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 md:gap-3 w-[90%] md:max-w-5xl mx-auto z-20">
           {[
             { name: "Plumbing", icon: "🔧" },
@@ -63,8 +63,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="pt-10 pb-8 md:px-6 text-center bg-[#020202]">
-        <h2 className="text-[1.65rem] md:text-3xl font-bold mb-4 md:mb-8 text-white">How It Works</h2>
+      <section id="work" className="pt-10 pb-8 md:px-6 text-center bg-[#020202]">
+        <h2 className="text-[1.65rem] md:text-[1.75rem] font-bold mb-4 md:mb-8 text-white">How It Works</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 w-[90%] max-w-5xl mx-auto ">
           {[
             { step: "1", title: "Choose Service", desc: "Choose your service and technician based on location and need." },
@@ -83,20 +83,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="">
+      <section>
         <Testimonials/>
       </section>
 
-      <section className="text-center pt-8 pb-4 md:pt-10 md:pb-3 bg-[#020202] flex justify-center items-center">
+      <section id="contact" className="text-center pt-8 pb-4 md:pt-10 md:pb-3 bg-[#020202] flex justify-center items-center">
         <div className="w-[90%] md:w-2/3 p-8 md:p-12 bg-neutral-950/10 border rounded-md">
-          <h2 className="text-lg md:text-3xl font-bold text-white">
+          <h2 className="text-lg md:text-[1.75rem] font-bold text-white">
           Ready to book your first service?
         </h2>
         <Link
           href="/signup"
           className="mt-6 inline-block px-8 py-3 bg-orange-500 text-black font-medium rounded-md shadow hover:bg-orange-600 transition"
         >
-          Sign Up Now
+          Create New Account
         </Link>
         </div>
       </section>

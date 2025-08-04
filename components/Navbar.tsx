@@ -15,40 +15,60 @@ import { useState } from "react";
 
 export function NavbarDemo() {
   const navItems = [
-    {
-      name: "Services",
-      link: "#services",
-    },
-    {
-      name: "Work",
-      link: "#work",
-    },
-    {
-      name: "Contact",
-      link: "#contact",
-    },
+    { name: "Services", id: "services" },
+    { name: "Work", id: "work" },
+    { name: "Contact", id: "contact" },
   ];
-
-
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const yOffset = -80;
+      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  };
 
   return (
     <div className="sticky w-full z-50">
       <Navbar>
         <NavBody>
           <NavbarLogo />
-          <NavItems items={navItems} />
+
+          <NavItems
+            items={navItems.map((item) => ({
+              name: item.name,
+              link: `#${item.id}`,
+            }))}
+            onItemClick={(e) => {
+              e?.preventDefault?.();
+              const targetId = e?.currentTarget?.getAttribute("href")?.replace("#", "");
+              if (targetId) scrollToSection(targetId);
+            }}
+          />
+
           <div className="flex items-center gap-4">
-            <NavbarButton onClick={()=>{
+            <NavbarButton
+              onClick={() => {
                 setIsMobileMenuOpen(false);
-                router.push("/api/auth/signin")
-                }} variant="secondary">Login</NavbarButton>
-            <NavbarButton onClick={()=>{
+                router.push("/api/auth/signin");
+              }}
+              variant="secondary"
+            >
+              Login
+            </NavbarButton>
+            <NavbarButton
+              onClick={() => {
                 setIsMobileMenuOpen(false);
-                router.push("/signup")
-                }} variant="secondary">Get Started</NavbarButton>
+                router.push("/signup");
+              }}
+              variant="secondary"
+            >
+              Signup
+            </NavbarButton>
           </div>
         </NavBody>
 
@@ -65,21 +85,23 @@ export function NavbarDemo() {
             isOpen={isMobileMenuOpen}
             onClose={() => setIsMobileMenuOpen(false)}
           >
-            {navItems.map((item, idx) => (
-              <a
-                key={`mobile-link-${idx}`}
-                href={item.link}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="relative text-neutral-900 dark:text-neutral-300"
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  scrollToSection(item.id);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="relative text-neutral-900 dark:text-neutral-300 text-left"
               >
-                <span className="block">{item.name}</span>
-              </a>
+                {item.name}
+              </button>
             ))}
             <div className="flex w-full flex-col gap-4">
               <NavbarButton
-                onClick={()=>{
-                setIsMobileMenuOpen(false);
-                router.push("/api/auth/signin")
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  router.push("/api/auth/signin");
                 }}
                 variant="primary"
                 className="w-full bg-[#ff7600]"
@@ -87,9 +109,9 @@ export function NavbarDemo() {
                 Login
               </NavbarButton>
               <NavbarButton
-                onClick={()=>{
-                setIsMobileMenuOpen(false);
-                router.push("/signup")
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  router.push("/signup");
                 }}
                 variant="primary"
                 className="w-full bg-[#0A0A0A] border-[#ff7600] border text-[#ff7600]"
