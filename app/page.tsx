@@ -20,22 +20,22 @@ export default function Home() {
       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-90"></div>
       </div>
 
-        <h1 className="text-3xl md:text-5xl font-bold text-gray-200 max-w-2xl leading-[3.5rem] z-10">
-          <span className="text-[#ff7600]">FixIt</span> - Reliable Home Services, On Demand
+        <h1 className="text-[1.65rem] md:text-5xl font-bold text-gray-200 sm:max-w-3xl leading-[2rem] md:leading-[3.5rem] z-10">
+          <span className="text-[#ff7600] ">FixIt</span> - Reliable Home Services, On Demand
         </h1>
-        <p className="mt-4 text-lg text-neutral-300 max-w-lg mx-auto z-10">
+        <p className="mt-4 text-sm md:text-lg text-neutral-300 max-w-sm md:max-w-lg  mx-auto z-10">
           Connect with verified technicians for hassle-free services like plumbing, electrician and many more whenever you need them.
         </p>
-        <div className="mt-6 flex justify-center gap-4 z-10">
+        <div className="mt-8 md:mt-6 flex justify-center items-center gap-2 md:gap-4 z-10">
           <Link
             href="/signup"
-            className="px-6 py-3 bg-[#ff7600] text-black font-medium rounded-md shadow hover:bg-[#ff6a00] transition"
+            className="px-5 md:px-6 py-3 text-sm md:text-base bg-[#ff7600] text-black font-medium rounded-md shadow hover:bg-[#ff6a00] transition"
           >
             Get Started
           </Link>
           <Link
             href="/services"
-            className="px-6 py-3 border-2 bg-black/10 font-medium border-[#ff7600] text-[#ff7600] rounded-md transition"
+            className="px-5 md:px-6 py-3 text-sm md:text-base border md:border-2 bg-black/10 font-medium border-[#ff7600] text-[#ff7600] rounded-md transition"
           >
             Explore Services
           </Link>
