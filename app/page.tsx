@@ -9,7 +9,7 @@ export default function Home() {
       <NavbarDemo/>
       <div className="z-20 relative">
       <main className="min-h-screen min-w-full  text-gray-800 ">
-      <section className="bg-black min-w-full text-center pt-44 pb-32  md:py-44 px-6 flex flex-col justify-center overflow-hidden  items-center relative">
+      <section className="bg-black min-w-full text-center pt-44 pb-32 md:pt-52 md:pb-40 px-6 flex flex-col justify-center overflow-hidden  items-center relative">
         {/* <Image src="/bgbg.png" className="absolute w-full h-full z-0 opacity-30" alt="img"  height={1000} width={1000}/> */}
       <video
       src="/bg-vid.mp4"
@@ -20,13 +20,13 @@ export default function Home() {
       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-90"></div>
       </div>
 
-        <h1 className="text-[1.65rem] md:text-5xl font-bold text-gray-200 sm:max-w-3xl leading-[2rem] md:leading-[3.5rem] z-10">
+        <h1 className="text-[1.65rem] md:text-5xl font-bold text-gray-200 max-w-3xl md:max-w-2xl leading-[2rem] md:leading-[3.5rem] z-10">
           <span className="text-[#ff7600] ">FixIt</span> - Reliable Home Services, On Demand
         </h1>
         <p className="mt-4 text-sm md:text-lg text-neutral-300 max-w-sm md:max-w-lg  mx-auto z-10">
           Connect with verified technicians for hassle-free services like plumbing, electrician and many more whenever you need them.
         </p>
-        <div className="mt-8 md:mt-6 flex justify-center items-center gap-2 md:gap-4 z-10">
+        <div className="mt-8 md:mt-10 flex justify-center items-center gap-2 md:gap-4 z-10">
           <Link
             href="/signup"
             className="px-5 md:px-6 py-3 text-sm md:text-base bg-[#ff7600] text-black font-medium rounded-md shadow hover:bg-[#ff6a00] transition"
@@ -43,7 +43,7 @@ export default function Home() {
       </section>
 
       <section className="py-16 relative bg-[#020202]">
-        <h2 className="text-[1.65rem] md:text-3xl font-bold text-center mb-4 md:mb-12 text-white">Our Services</h2>
+        <h2 className="text-[1.65rem] md:text-3xl font-bold text-center mb-4 md:mb-8 text-white">Our Services</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 md:gap-3 w-[90%] md:max-w-5xl mx-auto z-20">
           {[
             { name: "Plumbing", icon: "🔧" },
@@ -65,7 +65,7 @@ export default function Home() {
 
       <section className="py-16 md:px-6 text-center bg-[#020202]">
         <h2 className="text-[1.65rem] md:text-3xl font-bold mb-4 md:mb-8 text-white">How It Works</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 w-[90%]  md:max-w-5xl mx-auto ">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 w-[90%] max-w-5xl mx-auto ">
           {[
             { step: "1", title: "Choose Service", desc: "Choose your service and technician based on location and need." },
             { step: "2", title: "Get Technician", desc: "We assign a verified technician for your request." },
@@ -73,7 +73,7 @@ export default function Home() {
           ].map((item) => (
             <div
               key={item.step}
-              className="bg-neutral-950/10 border hover:border-[#ff7600]/30 rounded-md shadow p-8 md:p-10 hover:shadow-md transition sm:w-[90%]"
+              className="bg-neutral-950/10 border hover:border-[#ff7600]/30 rounded-md shadow p-8 md:p-10 hover:shadow-md transition sm:w-[90%] md:w-full"
             >
               <div className="text-xl md:text-2xl font-bold text-orange-500 mb-2">Step {item.step}</div>
               <h3 className="md:text-lg font-semibold mb-2 text-white">{item.title}</h3>
@@ -83,8 +83,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="text-center pt-10 pb-4 md:py-16 bg-[#020202] flex justify-center items-center">
-        <div className="w-[90%] md:w-2/3 p-8 md:p-10 bg-neutral-950/10 border rounded-md">
+      <section className="text-center pt-10 pb-4 md:py-4 bg-[#020202] flex justify-center items-center">
+        <div className="w-[90%] md:w-2/3 p-8 md:p-12 bg-neutral-950/10 border rounded-md">
           <h2 className="text-xl md:text-3xl font-bold text-white">
           Ready to book your first service?
         </h2>
