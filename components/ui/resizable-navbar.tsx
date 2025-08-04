@@ -8,6 +8,7 @@ import {
   useScroll,
   useMotionValueEvent,
 } from "motion/react";
+import Link from "next/link";
 
 import React, { useRef, useState } from "react";
 
@@ -136,7 +137,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
           {hovered === idx && (
             <motion.div
               layoutId="hovered"
-              className="absolute inset-0 h-full w-full rounded-full bg-gray-100 dark:bg-neutral-800"
+              className="absolute inset-0 h-full w-full rounded-full bg-gray-100 dark:bg-[#ff7600] text-black"
             />
           )}
           <span className="relative z-20">{item.name}</span>
@@ -233,13 +234,13 @@ export const MobileNavToggle = ({
 
 export const NavbarLogo = () => {
   return (
-    <a
-      href="#"
+    <Link
+      href="/"
       className="relative z-20 mr-4 flex md:gap-1 items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
       <Wrench className="text-[#ff7600] md:text-auto"/>
       <span className="font-medium text-black dark:text-white text-lg">Fix It</span>
-    </a>
+    </Link>
   );
 };
 
