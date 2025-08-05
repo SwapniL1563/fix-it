@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 interface BookingModalProps {
   technicianId: string;
   onClose: () => void;
-  onBooked: () => void;
+  onBooked?: () => void; 
 }
 
 export default function BookingModal({ technicianId, onClose, onBooked }: BookingModalProps) {
@@ -15,20 +16,24 @@ export default function BookingModal({ technicianId, onClose, onBooked }: Bookin
   const [loading, setLoading] = useState(false);
 
   const createBooking = async () => {
-    if (!date) return alert("Select date & time");
+    if (!date) return toast.error("Select date & time");
 
     try {
       setLoading(true);
-      await axios.post("/api/bookings", {
+      const res = await axios.post("/api/bookings", {
         technicianId,
         date,
         description,
       });
-      onBooked();
-      onClose();
+
+      if (res.data.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl; // FIXED
+      } else {
+        toast.error("Failed to initiate payment");
+      }
     } catch (error) {
       console.error("Booking failed", error);
-      alert("Booking failed");
+      toast.error("Booking failed");
     } finally {
       setLoading(false);
     }
@@ -36,9 +41,9 @@ export default function BookingModal({ technicianId, onClose, onBooked }: Bookin
 
   return (
     <div className="fixed inset-0 bg-black/90 flex justify-center items-center z-50">
-      <div className="bg-[#0b0b0b] p-6 rounded-lg border shadow-lg w-full max-w-md ">
+      <div className="bg-[#0b0b0b] p-6 rounded-lg border shadow-lg w-full max-w-md">
         <h2 className="text-lg font-bold mb-4">Book Appointment</h2>
-        
+
         <h2 className="text-gray-400 mb-2">Select Date & Time:</h2>
         <input
           type="datetime-local"
@@ -63,7 +68,7 @@ export default function BookingModal({ technicianId, onClose, onBooked }: Bookin
             disabled={loading}
             className="px-4 py-2 bg-[#ff7600] text-black font-medium rounded"
           >
-            {loading ? "Booking..." : "Confirm"}
+            {loading ? "Redirecting..." : "Confirm & Pay"}
           </button>
         </div>
       </div>

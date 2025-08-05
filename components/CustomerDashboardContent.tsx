@@ -11,55 +11,13 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { BookingCardSkeleton, TechnicianCardSkeleton } from "./SkeletonLoaderTechnicianCard";
 
-interface Technician {
-  id: string;
-  bio: string;
-  verified: boolean;
-  avgRating: string;
-  user: {
-    name: string;
-    email: string;
-    city: string;
-    address: string;
-  };
-  service: {
-    name: string;
-  };
-}
-
-interface Services {
-  name: string;
-  id: string;
-}
-
-interface Booking {
-  id: string;
-  date: string;
-  description: string;
-  status: string;
-  technician: {
-    id: string;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      city: string;
-      address: string;
-    };
-    service: {
-      name: string;
-    };
-  };
-  review?: { id: string } | null;
-}
-
 export default function CustomerDashboardContent() {
-  const [technicians, setTechnicians] = useState<Technician[]>([]);
-  const [services, setServices] = useState<Services[]>([]);
+  const [technicians, setTechnicians] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
   const [filters, setFilters] = useState({ serviceId: "", search: "" });
   const [loading, setLoading] = useState(false);
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<any[]>([]);
   const [bookingsLoading, setBookingsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -68,11 +26,7 @@ export default function CustomerDashboardContent() {
   const { data: session } = useSession();
 
   useEffect(() => {
-    const fetchServices = async () => {
-      const res = await axios.get("/api/services");
-      setServices(res.data);
-    };
-    fetchServices();
+    axios.get("/api/services").then((res) => setServices(res.data));
   }, []);
 
   const fetchTechnicians = async () => {
@@ -109,6 +63,12 @@ export default function CustomerDashboardContent() {
 
   useEffect(() => {
     fetchBookings();
+  }, []);
+
+  useEffect(() => {
+    const handleFocus = () => fetchBookings();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
   }, []);
 
   const filteredBookings = bookings.filter((item) => {
@@ -175,7 +135,7 @@ export default function CustomerDashboardContent() {
           ))}
         </div>
       ) : technicians.length === 0 ? (
-        <p className="">No verified technicians</p>
+        <p>No verified technicians</p>
       ) : (
         <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           {technicians.map((item) => (
@@ -204,7 +164,7 @@ export default function CustomerDashboardContent() {
         <BookingModal
           technicianId={selectedTech}
           onClose={() => setSelectedTech(null)}
-          onBooked={() => fetchTechnicians()}
+          onBooked={() => fetchBookings()} 
         />
       )}
 
@@ -225,13 +185,14 @@ export default function CustomerDashboardContent() {
         ) : filteredBookings.length === 0 ? (
           <p className="mt-4">No previous bookings</p>
         ) : (
-          <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-2 ">
+          <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {filteredBookings.map((booking) => (
               <BookingCardCustomer
                 key={booking.id}
                 id={booking.id}
                 date={booking.date}
                 status={booking.status}
+                paymentStatus={booking.paymentStatus}
                 description={booking.description}
                 service={booking.technician.service.name}
                 technician={{

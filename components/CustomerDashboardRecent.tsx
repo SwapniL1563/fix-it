@@ -11,6 +11,7 @@ interface Booking {
   date: string;
   description: string;
   status: string;
+  paymentStatus: string;
   technician: {
     id: string;
     user: {
@@ -37,6 +38,7 @@ export default function CustomerRecentContent() {
     setBookingsLoading(true);
     try {
       const res = await axios.get("/api/bookings");
+
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -77,10 +79,10 @@ export default function CustomerRecentContent() {
 
       {bookingsLoading ? (
         <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-        {Array.from({ length: 6 }).map((_, i) => (
-        <BookingCardSkeleton key={i} />
-        ))}
-      </div>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <BookingCardSkeleton key={i} />
+          ))}
+        </div>
       ) : filteredBookings.length === 0 ? (
         <p className="mt-4">No recent bookings</p>
       ) : (
@@ -91,6 +93,7 @@ export default function CustomerRecentContent() {
               id={booking.id}
               date={booking.date}
               status={booking.status}
+              paymentStatus={booking.paymentStatus} 
               description={booking.description}
               service={booking.technician.service.name}
               technician={{
@@ -100,7 +103,7 @@ export default function CustomerRecentContent() {
                 city: booking.technician.user.city,
                 address: booking.technician.user.address,
               }}
-              onCancel={() => {}}
+              onCancel={() => {}} 
               reviewExists={!!booking.review}
             />
           ))}

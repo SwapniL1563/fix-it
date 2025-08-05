@@ -1,106 +1,95 @@
-import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-export async function POST(req:NextRequest){
-    const session = await getServerSession(authOptions);
+export const dynamic = "force-dynamic";
 
-    if(!session || session.user.role !== "CUSTOMER"){
-        return NextResponse.json({
-            error:"Unauthorised"
-        }, {
-            status:401
-        })
-    };
+export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
 
-    try {
-        const { technicianId , date , description } = await req.json();
+  if (!session || session.user.role !== "CUSTOMER") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-        const techExists = await prisma.technician.findUnique({ where: { id: technicianId }, include:{service:true} });
+  try {
+    const { technicianId, date, description } = await req.json();
 
-        if (!techExists) {
-        return NextResponse.json({ error: "Technician not found" }, { status: 404 });
-        }
+    const tech = await prisma.technician.findUnique({
+      where: { id: technicianId },
+      include: { service: true },
+    });
 
-        const amountInPaise = techExists.service.price * 100;
-       
-        // we will now create booking - unpaid by default
-        const booking = await prisma.booking.create({
-            data:{
-                customerId:session.user.id,
-                technicianId,
-                date:new Date(date),
-                description,
-                paymentStatus:"UNPAID"
-            }
-        });
-
-
-        // now create stripe checkout session
-        const checkOutSession = await stripe.checkout.sessions.create({
-             payment_method_types:["card"],
-             mode:"payment",
-             line_items:[
-                {
-                    price_data:{
-                        currency:"inr",
-                        product_data:{
-                            name:`${techExists.service.name} Service`,
-                            description: description || "Service Booking"
-                        },
-                        unit_amount:amountInPaise,
-                    },
-                    quantity:1,
-                }
-             ],
-             success_url:`${process.env.NEXTAUTH_URL}/payment/success?bookingId=${booking.id}`,
-             cancel_url:`${process.env.NEXTAUTH_URL}/payment/cancel?bookingId=${booking.id}`,
-             metadata:{bookingId:booking.id}
-        });
-    
-        // return url for frontend redirect
-        return NextResponse.json({ url: checkOutSession.url });
-    } catch (error) {
-        console.error("Error creating booking:", error);
-        return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
+    if (!tech) {
+      return NextResponse.json({ error: "Technician not found" }, { status: 404 });
     }
+
+    const booking = await prisma.booking.create({
+      data: {
+        customerId: session.user.id,
+        technicianId,
+        date: new Date(date),
+        description,
+        status: "PENDING",
+        paymentStatus: "UNPAID",
+      },
+    });
+
+    const checkoutSession = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "inr",
+            product_data: {
+              name: `${tech.service.name} Service`,
+              description: description || "Service Booking",
+            },
+            unit_amount: tech.service.price * 100, 
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success?bookingId=${booking.id}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/customer`,
+      metadata: { bookingId: booking.id },
+    });
+
+    return NextResponse.json({ checkoutUrl: checkoutSession.url });
+  } catch (error) {
+    console.error("Booking creation error:", error);
+    return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
+  }
 }
 
-
 export async function GET() {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if(!session){
-    return NextResponse.json({
-            error:"Unauthorised"
-        }, {
-            status:401
-        })
-    }
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    try{
-    let bookings;
+  try {
+    if (session.user.role === "CUSTOMER") {
+      const bookings = await prisma.booking.findMany({
+        where: { customerId: session.user.id },
+        include: {
+          technician: { include: { user: true, service: true } },
+          review: true,
+        },
+        orderBy: { createdAt: "desc" },
+      });
 
-    if(session.user.role === "CUSTOMER") {
-        bookings = await prisma.booking.findMany({
-            where:{customerId:session.user.id},
-            include:{
-                technician:{include:{user:true,service:true}},
-                review:true,
-            },
-            orderBy:{ createdAt:"desc"}
-        });
-
-        const formatted = bookings.map((b) => ({
+      const formatted = bookings.map((b) => ({
         id: b.id,
         date: b.date,
         description: b.description,
         status: b.status,
-        paymentStatus:b.paymentStatus,
+        paymentStatus: b.paymentStatus,
         review: b.review,
         technician: {
           id: b.technician.id,
@@ -112,46 +101,43 @@ export async function GET() {
           },
           service: {
             name: b.technician.service.name,
-            price:b.technician.service.price,
+            price: b.technician.service.price,
           },
-          },
-         }));
+        },
+      }));
 
-        return NextResponse.json(formatted);
+      return NextResponse.json(formatted);
+    }
 
+    if (session.user.role === "TECHNICIAN") {
+      const technician = await prisma.technician.findUnique({
+        where: { userId: session.user.id },
+        include: { reviews: true },
+      });
 
-    } if(session.user.role === "TECHNICIAN") {
+      if (!technician) {
+        return NextResponse.json({ error: "Technician not found" }, { status: 404 });
+      }
 
-        const technician = await prisma.technician.findUnique({
-            where:{userId:session.user.id},
-            include:{ reviews:true }
-        })
+      const avgRating = technician.reviews.length
+        ? (
+            technician.reviews.reduce((sum, r) => sum + r.rating, 0) /
+            technician.reviews.length
+          ).toFixed(1)
+        : "0";
 
-        if(!technician) {
-            return NextResponse.json({
-                error:"Technician profile not found"
-            },{ status:404})
-        }
+      const bookings = await prisma.booking.findMany({
+        where: { technicianId: technician.id },
+        include: { customer: true },
+        orderBy: { createdAt: "desc" },
+      });
 
-        const ratings = technician.reviews.map((r) => r.rating);
-        const avgRating = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : "0";
+      return NextResponse.json({ bookings, avgRating });
+    }
 
-        bookings = await prisma.booking.findMany({
-            where:{technicianId:technician.id},
-            include:{
-                customer:true,
-            },
-            orderBy:{ createdAt:"desc"}
-        });
-
-        return NextResponse.json({bookings,avgRating});
-    } 
-
-    return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
-
-    } catch (error) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
     console.error("Error fetching bookings:", error);
     return NextResponse.json({ error: "Failed to fetch bookings" }, { status: 500 });
   }
 }
-

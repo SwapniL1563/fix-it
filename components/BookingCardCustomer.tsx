@@ -5,6 +5,7 @@ interface BookingCardCustomerProps {
   id: string;
   date: string;
   status: string;
+  paymentStatus:string;
   technician: {
     id: string;
     name: string;
@@ -22,6 +23,7 @@ export default function BookingCardCustomer({
   id,
   date,
   status,
+  paymentStatus,
   technician,
   service,
   description,
@@ -30,12 +32,21 @@ export default function BookingCardCustomer({
 }: BookingCardCustomerProps) {
   const [showReviewModal, setShowReviewModal] = useState(false);
 
+  const normalizedPaymentStatus = (paymentStatus || "UNPAID").toUpperCase();
+
   const statusColor: Record<string, string> = {
     PENDING: "bg-yellow-500/20 text-yellow-400 border-yellow-500/40",
     ACCEPTED: "bg-blue-500/20 text-blue-400 border-blue-500/40",
     COMPLETED: "bg-green-500/20 text-green-400 border-green-500/40",
     CANCELLED: "bg-red-500/20 text-red-400 border-red-500/40",
   };
+
+   const paymentColor: Record<string, string> = {
+    PAID: "bg-green-500/20 text-green-400 border-green-500/40",
+    UNPAID: "bg-red-500/20 text-red-400 border-red-500/40",
+  };
+
+
 
   return (
     <div className="p-6 border border-[#181818] rounded-md bg-[#0b0b0b] hover:border-[#ff7600]/20 transition">
@@ -66,10 +77,12 @@ export default function BookingCardCustomer({
       )}
 
       <span
-        className={`inline-block mt-4 px-3 py-1 text-xs font-semibold rounded-full border ${statusColor[status]}`}
-      >
+        className={`inline-block mt-4 px-3 py-1 text-xs font-semibold rounded-full border ${statusColor[status]}`}>
         {status}
       </span>
+      
+      <span className={`inline-block mt-2 ml-2 px-3 py-1 text-xs font-semibold rounded-full border ${paymentColor[normalizedPaymentStatus] || "bg-gray-500/20 text-gray-400 border-gray-500/40"}`}>
+      {normalizedPaymentStatus}</span>
 
 
       <div className="flex gap-3 mt-4">
