@@ -4,14 +4,26 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function main() {
-  // --- 1. Seed Services ---
+  // --- 1. Seed Services with price ---
+  const servicePrices: Record<ServiceType, number> = {
+    PLUMBING: 500,     // price in INR
+    ELECTRICIAN: 700,
+    CARPENTRY: 600,
+    REPAIR: 800,
+    CLEANING: 400,
+  };
+
   const services = Object.values(ServiceType);
 
   for (const service of services) {
     await prisma.service.upsert({
       where: { name: service },
       update: {},
-      create: { name: service, description: `${service} services` },
+      create: {
+        name: service,
+        description: `${service} services`,
+        price: servicePrices[service],
+      },
     });
   }
 
@@ -59,7 +71,7 @@ async function main() {
       email: "technician@test.com",
       password: hashedPassword,
       role: "TECHNICIAN",
-      city:"Mumbai",
+      city: "Mumbai",
       address: "Ghansoli, Navi Mumbai",
     },
   });

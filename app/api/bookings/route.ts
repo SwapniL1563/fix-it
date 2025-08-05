@@ -2,6 +2,9 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req:NextRequest){
     const session = await getServerSession(authOptions);
@@ -16,22 +19,53 @@ export async function POST(req:NextRequest){
 
     try {
         const { technicianId , date , description } = await req.json();
-        const techExists = await prisma.technician.findUnique({ where: { id: technicianId } });
+
+        const techExists = await prisma.technician.findUnique({ where: { id: technicianId }, include:{service:true} });
+
         if (!techExists) {
         return NextResponse.json({ error: "Technician not found" }, { status: 404 });
         }
 
+        const amountInPaise = techExists.service.price * 100;
+       
+        // we will now create booking - unpaid by default
         const booking = await prisma.booking.create({
             data:{
                 customerId:session.user.id,
                 technicianId,
                 date:new Date(date),
                 description,
+                paymentStatus:"UNPAID"
             }
         });
 
-        return NextResponse.json(booking);
+
+        // now create stripe checkout session
+        const checkOutSession = await stripe.checkout.sessions.create({
+             payment_method_types:["card"],
+             mode:"payment",
+             line_items:[
+                {
+                    price_data:{
+                        currency:"inr",
+                        product_data:{
+                            name:`${techExists.service.name} Service`,
+                            description: description || "Service Booking"
+                        },
+                        unit_amount:amountInPaise,
+                    },
+                    quantity:1,
+                }
+             ],
+             success_url:`${process.env.NEXTAUTH_URL}/payment/success?bookingId=${booking.id}`,
+             cancel_url:`${process.env.NEXTAUTH_URL}/payment/cancel?bookingId=${booking.id}`,
+             metadata:{bookingId:booking.id}
+        });
+    
+        // return url for frontend redirect
+        return NextResponse.json({ url: checkOutSession.url });
     } catch (error) {
+        console.error("Error creating booking:", error);
         return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
     }
 }
@@ -66,6 +100,7 @@ export async function GET() {
         date: b.date,
         description: b.description,
         status: b.status,
+        paymentStatus:b.paymentStatus,
         review: b.review,
         technician: {
           id: b.technician.id,
@@ -77,6 +112,7 @@ export async function GET() {
           },
           service: {
             name: b.technician.service.name,
+            price:b.technician.service.price,
           },
           },
          }));

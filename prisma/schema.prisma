@@ -14,9 +14,9 @@ datasource db {
 }
 
 enum Role {
-   CUSTOMER
-   TECHNICIAN
-   ADMIN
+  CUSTOMER
+  TECHNICIAN
+  ADMIN
 }
 
 enum ServiceType {
@@ -33,16 +33,22 @@ enum BookingStatus {
   COMPLETED
   CANCELLED
 }
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+}
+
 model User {
-  id          String      @id @default(cuid())
-  name        String   
-  email       String      @unique
-  password    String
-  role        Role        @default(CUSTOMER) 
-  city        String?
-  address     String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(CUSTOMER)
+  city      String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   technicians Technician?
   bookings    Booking[]   @relation("CustomerBookings")
@@ -50,55 +56,53 @@ model User {
 }
 
 model Technician {
-  id          String     @id @default(cuid())
-  userId      String     @unique
-  serviceId   String
-  bio         String?
-  verified    Boolean    @default(false)
-  rating      Float      @default(0)
-  createdAt   DateTime   @default(now())
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  serviceId String
+  bio       String?
+  verified  Boolean  @default(false)
+  rating    Float    @default(0)
+  createdAt DateTime @default(now())
 
-  user        User       @relation(fields: [userId],references: [id])
-  service     Service    @relation(fields: [serviceId],references: [id])
-  bookings    Booking[]  @relation("TechnicianBookings")
-  reviews     Review[]
+  user     User      @relation(fields: [userId], references: [id])
+  service  Service   @relation(fields: [serviceId], references: [id])
+  bookings Booking[] @relation("TechnicianBookings")
+  reviews  Review[]
 }
 
 model Service {
-  id            String        @id @default(cuid())
-  name          ServiceType   @unique
-  description   String?
-  technicians   Technician[]
+  id          String       @id @default(cuid())
+  name        ServiceType  @unique
+  description String?
+  price       Int
+  technicians Technician[]
 }
 
 model Booking {
-  id            String         @id @default(cuid())
-  customerId    String  
+  id            String        @id @default(cuid())
+  customerId    String
   technicianId  String
-  date          DateTime   
+  date          DateTime
   description   String?
-  status        BookingStatus  @default(PENDING)
-  createdAt     DateTime       @default(now())
+  status        BookingStatus @default(PENDING)
+  paymentStatus PaymentStatus @default(UNPAID)
+  createdAt     DateTime      @default(now())
 
-  customer      User           @relation("CustomerBookings",fields: [customerId],references: [id])
-  technician    Technician     @relation("TechnicianBookings",fields: [technicianId],references: [id])
-  review        Review?
+  customer   User       @relation("CustomerBookings", fields: [customerId], references: [id])
+  technician Technician @relation("TechnicianBookings", fields: [technicianId], references: [id])
+  review     Review?
 }
 
 model Review {
-  id            String         @id @default(cuid())
-  rating        Int
-  comment       String?
-  customerId    String
-  technicianId  String
-  bookingId     String         @unique
-  createdAt     DateTime       @default(now())
+  id           String   @id @default(cuid())
+  rating       Int
+  comment      String?
+  customerId   String
+  technicianId String
+  bookingId    String   @unique
+  createdAt    DateTime @default(now())
 
-  customer      User           @relation(fields: [customerId],references: [id])
-  technician    Technician     @relation(fields: [technicianId],references: [id])
-  booking       Booking        @relation(fields: [bookingId],references: [id])
+  customer   User       @relation(fields: [customerId], references: [id])
+  technician Technician @relation(fields: [technicianId], references: [id])
+  booking    Booking    @relation(fields: [bookingId], references: [id])
 }
-
-
-
-
