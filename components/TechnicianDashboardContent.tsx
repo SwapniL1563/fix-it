@@ -15,6 +15,7 @@ interface Booking {
   date: string;
   description: string;
   status: string;
+  paymentStatus: string;
   customer: {
     name: string;
     email: string;
@@ -106,6 +107,7 @@ export default function TechnicianDashboardContent() {
               description={item.description}
               date={item.date}
               status={item.status}
+              paymentStatus={item.paymentStatus}
               customer={item.customer}
               onUpdateStatus={updateBookingStatus}
             />
