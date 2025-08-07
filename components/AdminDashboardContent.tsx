@@ -39,6 +39,7 @@ interface Booking {
   date: string;
   description: string;
   status: string;
+  paymentStatus:string;
   technician: {
     user: {
       name: string;
@@ -102,7 +103,7 @@ export default function AdminDashboardContent() {
 
   const filteredBookings = bookings.filter((b) => {
     const matchesStatus =
-      bookingStatusFilter === "" || b.status === bookingStatusFilter;
+      bookingStatusFilter === "" || b.status === bookingStatusFilter || b.paymentStatus === bookingStatusFilter;
     const searchLower = bookingSearch.toLowerCase();
     const matchesSearch =
       b.customer.name.toLowerCase().includes(searchLower) ||
@@ -139,7 +140,7 @@ export default function AdminDashboardContent() {
       <AdminBookingCardSkeleton key={i} />
        ))}
       </div>
-      ) : ( <AdminBookings bookings={filteredBookings} refresh={fetchBookings} /> )}
+      ) : ( <AdminBookings bookings={filteredBookings}  refresh={fetchBookings} /> )}
     </div>
   );
 }

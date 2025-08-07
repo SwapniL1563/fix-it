@@ -8,6 +8,7 @@ interface Booking {
   date: string;
   description: string;
   status: string;
+  paymentStatus:string;
   customer: {
     name: string;
     email: string;
@@ -60,6 +61,11 @@ export default function AdminBookings({ bookings, refresh }: Props) {
     CANCELLED: "bg-red-500/20 text-red-400 border-red-500/40",
   };
 
+   const paymentColor: Record<string, string> = {
+    PAID: "bg-green-500/20 text-green-400 border-green-500/40",
+    UNPAID: "bg-red-500/20 text-red-400 border-red-500/40",
+   };
+
   return (
     <div className="">
       <div className="flex flex-col md:flex-row gap-2 mb-2">
@@ -110,10 +116,16 @@ export default function AdminBookings({ bookings, refresh }: Props) {
               )}
 
               <span
-                className={`inline-block mt-3 px-3 py-1 text-xs font-semibold rounded-full border ${statusColor[b.status]}`}
+                className={`inline-block mt-3 mr-3 px-3 py-1 text-xs font-semibold rounded-full border ${statusColor[b.status]}`}
               >
                 {b.status}
               </span>
+
+              <span className={`inline-block mt-3 px-3 py-1 text-xs font-semibold rounded-full border ${paymentColor[b.paymentStatus] || paymentColor["UNPAID"]}`}>
+              {b.paymentStatus}
+              </span>
+
+
 
               <div className="flex gap-2 mt-4">
                 {b.status !== "CANCELLED" && b.status !== "COMPLETED" && (
