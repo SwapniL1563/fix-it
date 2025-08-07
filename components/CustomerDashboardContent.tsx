@@ -92,7 +92,8 @@ export default function CustomerDashboardContent() {
 
   return (
     <div className="w-full min-h-full md:p-1 py-2 md:py-4 relative overflow-hidden">
-      <h1 className="md:text-lg px-1 md:mb-1">Welcome back, {session?.user?.name}</h1>
+      <h1 className="md:text-lg px-1 md:mb-1">Welcome back, {session?.user?.name ? ( <h1>Welcome, {session.user.name}</h1>) : (
+      <h1 className="text-2xl font-semibold">Loading...</h1>)}</h1>
 
       <BookingStatsCustomer bookings={bookings} />
 
@@ -122,7 +123,7 @@ export default function CustomerDashboardContent() {
 
         <button
           onClick={fetchTechnicians}
-          className="px-3 text-sm md:text-base md:px-4 py-2 md:py-3 rounded bg-[#ff7600] w-full md:w-auto text-black font-medium cursor-pointer"
+          className="px-3 text-sm md:text-base md:px-4 py-2 md:py-3 rounded bg-[#ff7600] hover:bg-[#ff6a00] w-full md:w-auto text-black font-medium cursor-pointer"
         >
           Apply filters
         </button>
@@ -151,7 +152,7 @@ export default function CustomerDashboardContent() {
               <StarRating rating={parseFloat(item.avgRating)} />
               <button
                 onClick={() => setSelectedTech(item.id)}
-                className="text-sm md:text-base mt-3 px-3 py-2 w-full md:w-auto rounded bg-[#ff7600] text-black font-medium"
+                className="text-sm md:text-base mt-3 px-3 py-2 w-full md:w-auto rounded bg-[#ff7600] hover:bg-[#ff6a00] text-black font-medium"
               >
                 Book appointment
               </button>

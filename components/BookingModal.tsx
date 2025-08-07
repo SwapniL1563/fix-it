@@ -66,7 +66,7 @@ export default function BookingModal({ technicianId, onClose, onBooked }: Bookin
           <button
             onClick={createBooking}
             disabled={loading}
-            className="px-4 py-2 bg-[#ff7600] text-black font-medium rounded"
+            className="px-4 py-2 bg-[#ff7600] hover:bg-[#ff6a00] text-black font-medium rounded"
           >
             {loading ? "Redirecting..." : "Confirm & Pay"}
           </button>

@@ -146,14 +146,14 @@ export default function AdminTechnicians({
                 <button
                   onClick={() => verifyTech(tech.id)}
                   disabled={loadingId === tech.id}
-                   className="w-full md:w-1/2 text-sm md:text-base md:auto px-4 py-2 text-green-400 border-1 border-green-500/40 bg-green-500/20 font-medium rounded transition"
+                   className="w-full md:w-1/2 text-sm md:text-base md:auto px-4 py-2 text-green-400 border-1 border-green-500/40 bg-green-500/20 font-medium  rounded transition"
                 >
                   {loadingId === tech.id ? "Verifying..." : "Verify"}
                 </button>
               )}
               <button
                 onClick={() => deleteTech(tech.id)}
-                className="w-full md:w-1/2 text-sm md:text-base md:auto px-4 py-2 bg-[#ff7600] text-black font-medium rounded transition"
+                className="w-full md:w-1/2 text-sm md:text-base md:auto px-4 py-2 bg-[#ff7600] hover:bg-[#ff6a00] text-black font-medium rounded transition"
               >
                 Delete
               </button>

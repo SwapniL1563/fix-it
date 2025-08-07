@@ -78,7 +78,7 @@ export default function AdminUsers({ users, refresh }: AdminUsersProps) {
               <button
                 onClick={() => deleteUser(user.id)}
                 disabled={loadingId === user.id}
-                className="mt-3 px-3 py-2 bg-[#ff7600] text-black rounded transition font-medium"
+                className="mt-3 px-3 py-2 bg-[#ff7600] hover:bg-[#ff6a00] text-black rounded transition font-medium"
               >
                 {loadingId === user.id ? "Deleting..." : "Delete"}
               </button>

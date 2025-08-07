@@ -21,7 +21,7 @@ export default function BookingCancelModal({
               onConfirm();
               onClose();
             }}
-            className="px-3 py-1 bg-[#ff7600] text-black font-medium rounded"
+            className="px-3 py-1 bg-[#ff7600] hover:bg-[#ff6a00] text-black font-medium rounded"
           >
             Yes, Cancel
           </button>

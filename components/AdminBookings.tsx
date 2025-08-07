@@ -132,13 +132,13 @@ export default function AdminBookings({ bookings, refresh }: Props) {
                   <>
                     <button
                       onClick={() => updateStatus(b.id, "COMPLETED")}
-                      className="px-3 py-2 bg-green-600 rounded text-white hover:bg-green-700"
+                      className="px-3 py-2 bg-green-600 rounded text-black font-medium hover:bg-green-700"
                     >
                       Mark Completed
                     </button>
                     <button
                       onClick={() => updateStatus(b.id, "CANCELLED")}
-                      className="px-3 py-2 bg-red-600 rounded text-white hover:bg-red-700"
+                      className="px-3 py-2 bg-red-600 rounded text-black font-medium hover:bg-red-700"
                     >
                       Cancel
                     </button>

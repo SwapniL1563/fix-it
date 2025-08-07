@@ -10,10 +10,7 @@ export default function Home() {
       <div className="z-20 relative">
       <main className="min-h-screen min-w-full  text-gray-800 ">
       <section className="bg-black min-w-full text-center pt-44 pb-32 md:pt-52 md:pb-40 px-6 flex flex-col justify-center overflow-hidden  items-center relative">
-        {/* <Image src="/bgbg.png" className="absolute w-full h-full z-0 opacity-30" alt="img"  height={1000} width={1000}/> */}
-      <video
-      src="/bg-vid.mp4"
-      className="absolute inset-0 w-full h-full object-cover z-0 opacity-40" autoPlay muted loop></video>
+      <video src="/bg-vid.mp4" className="absolute inset-0 w-full h-full object-cover z-0 opacity-40" autoPlay muted loop></video>
 
       <div className="absolute inset-0 z-0">
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-black/70 opacity-90"></div>
@@ -43,7 +40,7 @@ export default function Home() {
       </section>
 
       <section id="services" className="py-16 relative bg-[#020202]">
-        <h2 className="text-[1.65rem] md:text-[1.75rem] font-bold text-center mb-4 md:mb-8 text-white">Our Services</h2>
+        <h2 className="text-[1.65rem] md:text-[1.75rem] font-bold text-center mb-4 md:mb-8 text-white">Services We Provide</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 md:gap-3 w-[90%] md:max-w-5xl mx-auto z-20">
           {[
             { name: "Plumbing", icon: "🔧" },
@@ -66,18 +63,17 @@ export default function Home() {
       <section id="work" className="pt-10 pb-8 md:px-6 text-center bg-[#020202]">
         <h2 className="text-[1.65rem] md:text-[1.75rem] font-bold mb-4 md:mb-8 text-white">How It Works</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 w-[90%] max-w-5xl mx-auto ">
-          {[
-            { step: "1", title: "Choose Service", desc: "Choose your service and technician based on location and need." },
-            { step: "2", title: "Get Technician", desc: "We assign a verified technician for your request." },
-            { step: "3", title: "Job Done", desc: "Technician completes the task to your satisfaction." },
-          ].map((item) => (
+          {[ {  step: "1", title: "Book Your Service", desc: "Select the service type, describe your issue, and choose your location to initiate a service request."},
+             {  step: "2", title: "Secure Payment", desc: "Complete the payment securely. Once done, your request is confirmed and queued for assignment."},
+             {  step: "3", title: "Get Your Technician", desc: "A verified technician is assigned to your request and contacts you to complete the job efficiently."},
+            ].map((item) => (
             <div
               key={item.step}
               className="bg-neutral-950/10 border hover:border-[#ff7600]/30 rounded-md shadow p-8 md:p-10 hover:shadow-md transition sm:w-[90%] md:w-full"
             >
-              <div className="text-xl md:text-2xl font-bold text-orange-500 mb-2">Step {item.step}</div>
+              <div className="text-xl md:text-2xl font-bold text-[#ff7600] mb-2">Step {item.step}</div>
               <h3 className="md:text-lg font-semibold mb-2 text-white">{item.title}</h3>
-              <p className="text-sm md:text-base text-gray-400">{item.desc}</p>
+              <p className="text-sm md:text-[0.5rem] md:text-base text-gray-400">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -87,14 +83,14 @@ export default function Home() {
         <Testimonials/>
       </section>
 
-      <section id="contact" className="text-center pt-8 pb-4 md:pt-10 md:pb-3 bg-[#020202] flex justify-center items-center">
-        <div className="w-[90%] md:w-2/3 p-8 md:p-12 bg-neutral-950/10 border rounded-md">
-          <h2 className="text-lg md:text-[1.75rem] font-bold text-white">
-          Ready to book your first service?
+      <section id="contact" className="text-center pt-8 pb-4 md:pt-7 md:pb-5 bg-[#020202] flex justify-center items-center">
+        <div className="w-[90%] md:w-2/3 p-8 md:p-12 bg-neutral-950/10 border rounded-md flex flex-col justify-center items-center">
+          <h2 className="md:text-[1.5rem] font-bold text-white md:w-[70%] text-center">
+          Ready to book your first service? Wanna Experience Professional Service that meets your need
         </h2>
         <Link
           href="/signup"
-          className="mt-6 inline-block px-8 py-3 bg-orange-500 text-black font-medium rounded-md shadow hover:bg-orange-600 transition"
+          className="mt-6 inline-block px-8 py-3 bg-[#ff7600] text-black font-medium rounded-md shadow hover:bg-[#ff6a00] transition"
         >
           Create New Account
         </Link>
