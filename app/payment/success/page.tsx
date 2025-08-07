@@ -45,7 +45,7 @@ export default function PaymentSuccessPage() {
           </h1>
           <button
             onClick={() => router.push("/dashboard/customer")}
-            className="bg-[#ff7600] text-black px-4 py-2 rounded"
+            className="bg-[#ff7600] font-medium text-black px-4 py-2 rounded"
           >
             Go to Dashboard
           </button>
@@ -54,6 +54,12 @@ export default function PaymentSuccessPage() {
         <>
           <h1 className="text-xl font-bold text-red-500">Payment not found</h1>
           <p>Please contact support if money was deducted.</p>
+          <button
+            onClick={() => router.push("/dashboard/customer")}
+            className="bg-[#ff7600] text-black font-medium px-4 py-2 rounded"
+          >
+            Go to Dashboard
+          </button>
         </>
       )}
     </div>

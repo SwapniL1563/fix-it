@@ -73,7 +73,7 @@ export default function Home() {
             >
               <div className="text-xl md:text-2xl font-bold text-[#ff7600] mb-2">Step {item.step}</div>
               <h3 className="md:text-lg font-semibold mb-2 text-white">{item.title}</h3>
-              <p className="text-sm md:text-[0.5rem] md:text-base text-gray-400">{item.desc}</p>
+              <p className="text-sm md:text-[0.95rem] md:text-base text-gray-400">{item.desc}</p>
             </div>
           ))}
         </div>

@@ -1,7 +1,6 @@
 "use client"
 
 import SignupForm from "@/components/SignuForm";
-import { toast } from "react-toastify";
 
 export default function SignUpPage() {
     return (

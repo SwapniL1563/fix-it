@@ -92,8 +92,7 @@ export default function CustomerDashboardContent() {
 
   return (
     <div className="w-full min-h-full md:p-1 py-2 md:py-4 relative overflow-hidden">
-      <h1 className="md:text-lg px-1 md:mb-1">Welcome back, {session?.user?.name ? ( <h1>Welcome, {session.user.name}</h1>) : (
-      <h1 className="text-2xl font-semibold">Loading...</h1>)}</h1>
+      <h1 className="md:text-lg px-1 md:mb-1">Welcome back, {session?.user?.name}</h1>
 
       <BookingStatsCustomer bookings={bookings} />
 
