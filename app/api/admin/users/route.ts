@@ -8,7 +8,7 @@ export async function GET() {
         });
         return NextResponse.json(bookings);
     }
-    catch(err) {
+    catch(error) {
         return NextResponse.json({error:"Unable to fetch all users"}, {
             status:500
         })

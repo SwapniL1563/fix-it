@@ -10,7 +10,7 @@ interface BookingModalProps {
   onBooked?: () => void; 
 }
 
-export default function BookingModal({ technicianId, onClose, onBooked }: BookingModalProps) {
+export default function BookingModal({ technicianId, onClose, }: BookingModalProps) {
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -45,7 +45,7 @@ export default function BookingModal({ technicianId, onClose, onBooked }: Bookin
         <h2 className="text-lg font-bold mb-4">Book Appointment</h2>
 
         <h2 className="text-gray-400 mb-2">Select Date & Time:</h2>
-        <input
+        <input title="date"
           type="datetime-local"
           value={date}
           onChange={(e) => setDate(e.target.value)}

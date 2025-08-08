@@ -16,7 +16,6 @@ interface User {
 
 export default function AdminDashboardUsersContent() {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState("");
   const [search, setSearch] = useState("");
    const [loadingUsers, setLoadingUsers] = useState(true);
@@ -50,7 +49,7 @@ export default function AdminDashboardUsersContent() {
       <h1 className="text-lg md:text-xl font-semibold mb-2 px-1">Manage Users</h1>
 
       <div className="flex flex-col md:flex-row gap-2 mb-2">
-        <select
+        <select title="role"
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
           className="p-3 text-[#828282] text-sm md:text-base rounded bg-[#0b0b0b] border border-border w-full md:w-[15%] outline-none"

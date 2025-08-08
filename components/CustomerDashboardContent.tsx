@@ -12,12 +12,12 @@ import { useSession } from "next-auth/react";
 import { BookingCardSkeleton, TechnicianCardSkeleton } from "./SkeletonLoaderTechnicianCard";
 
 export default function CustomerDashboardContent() {
-  const [technicians, setTechnicians] = useState<any[]>([]);
-  const [services, setServices] = useState<any[]>([]);
+  const [technicians, setTechnicians] = useState<unknown[]>([]);
+  const [services, setServices] = useState<unknown[]>([]);
   const [filters, setFilters] = useState({ serviceId: "", search: "" });
   const [loading, setLoading] = useState(false);
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<unknown[]>([]);
   const [bookingsLoading, setBookingsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -47,7 +47,7 @@ export default function CustomerDashboardContent() {
 
   useEffect(() => {
     fetchTechnicians();
-  }, []);
+  },[]);
 
   const fetchBookings = async () => {
     setBookingsLoading(true);

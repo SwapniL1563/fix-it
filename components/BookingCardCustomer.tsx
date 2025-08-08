@@ -73,7 +73,7 @@ export default function BookingCardCustomer({
 
       {description && (
         <p className="italic text-white mt-3 border-l-2 border-[#ff7600] pl-3">
-          "{description}"
+          {description}
         </p>
       )}
 

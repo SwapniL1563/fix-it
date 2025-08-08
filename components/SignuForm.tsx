@@ -55,7 +55,7 @@ export default function SignupFormDemo() {
     setMsg("");
 
     try {
-      const res = await axios.post("/api/signup", form);
+      await axios.post("/api/signup", form);
 
       toast.success('Signup successfully!');
 

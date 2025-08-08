@@ -5,7 +5,6 @@ import axios from "axios";
 import AdminStats from "@/components/AdminStats";
 import AdminTechnicians from "@/components/AdminTechnicians";
 import AdminBookings from "@/components/AdminBookings";
-import AdminUsers from "@/components/AdminUsers";
 import { useSession } from "next-auth/react";
 import { AdminBookingCardSkeleton, AdminTechnicianCardSkeleton } from "./SkeletonLoaderTechnicianCard";
 
@@ -68,8 +67,6 @@ export default function AdminDashboardContent() {
 
   const [bookingStatusFilter, setBookingStatusFilter] = useState("");
   const [bookingSearch, setBookingSearch] = useState("");
-  const [userRoleFilter, setUserRoleFilter] = useState("");
-  const [userSearch, setUserSearch] = useState("");
   const { data:session } = useSession();
 
   const fetchTechnicians = async () => {

@@ -69,7 +69,7 @@ export default function AdminBookings({ bookings, refresh }: Props) {
   return (
     <div className="">
       <div className="flex flex-col md:flex-row gap-2 mb-2">
-        <select
+        <select title="status"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           className="p-3 rounded border border-[#181818] bg-[#0b0b0b] text-[#828282] text-sm md:text-base w-full md:w-[15%]"
@@ -111,7 +111,7 @@ export default function AdminBookings({ bookings, refresh }: Props) {
 
               {b.description && (
                 <p className="italic text-white mt-2 border-l-2 border-[#ff7600] pl-3">
-                  "{b.description}"
+                  {b.description}
                 </p>
               )}
 

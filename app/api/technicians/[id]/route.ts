@@ -1,38 +1,36 @@
-import { prisma } from "@/lib/prisma"
-import { NextRequest, NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+import type { RouteContext } from "next";
 
-export async function GET(req:NextRequest,{params}: { params: Promise< {id:string}>}) {
-    const { id } = await params;
-    try {
+export async function GET(_req: NextRequest, context: RouteContext<{ id: string }>) {
+  const { id } = context.params;
+
+  try {
     const technician = await prisma.technician.findUnique({
-        where:{ userId:id},
-        include:{
-            user:true,
-            service:true,
-            reviews:true,
-        }
-    })
+      where: { userId: id },
+      include: {
+        user: true,
+        service: true,
+        reviews: true,
+      },
+    });
 
-    if(!technician) {
-        return NextResponse.json({
-            error:"Technician not found"
-        } , { status: 404})
+    if (!technician) {
+      return NextResponse.json({ error: "Technician not found" }, { status: 404 });
     }
 
     return NextResponse.json(technician);
-    } catch (error) {
-        return NextResponse.json({
-            error:"Error fetching technician"
-        } , { status: 500})  
-    }
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Error fetching technician" }, { status: 500 });
+  }
 }
 
-export async function PATCH(req: Request, context: { params: Promise< { id: string }> }) {
-  try {
-    const { id } = await context.params;
-    const { verified } = await req.json();
+export async function PATCH(req: NextRequest, context: RouteContext<{ id: string }>) {
+  const { id } = context.params;
+  const { verified } = await req.json();
 
-    // Check if technician exists
+  try {
     const tech = await prisma.technician.findUnique({
       where: { id },
     });
@@ -41,9 +39,8 @@ export async function PATCH(req: Request, context: { params: Promise< { id: stri
       return NextResponse.json({ error: "Technician not found" }, { status: 404 });
     }
 
-    // Update verification
     const updatedTechnician = await prisma.technician.update({
-      where: {id },
+      where: { id },
       data: { verified },
     });
 
@@ -53,5 +50,3 @@ export async function PATCH(req: Request, context: { params: Promise< { id: stri
     return NextResponse.json({ error: "Failed to verify technician", details: String(err) }, { status: 500 });
   }
 }
-
-

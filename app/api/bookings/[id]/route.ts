@@ -1,11 +1,11 @@
-// app/api/bookings/[id]/route.ts
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
+import type { RouteContext } from "next";
 
-export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const { id } = await context.params;
+export async function PATCH(req: NextRequest, context: RouteContext<{ id: string }>) {
+  const { id } = context.params;
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -23,7 +23,6 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
 
-    // CUSTOMER logic
     if (session.user.role === "CUSTOMER") {
       if (booking.customerId !== session.user.id) {
         return NextResponse.json({ error: "Not your booking" }, { status: 403 });
@@ -33,22 +32,16 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
       }
     }
 
-    // TECHNICIAN logic
     if (session.user.role === "TECHNICIAN") {
       const tech = await prisma.technician.findUnique({
         where: { userId: session.user.id },
       });
 
-      if (!tech) {
-        return NextResponse.json({ error: "Technician record not found" }, { status: 404 });
-      }
-
-      if (booking.technicianId !== tech.id) {
+      if (!tech || booking.technicianId !== tech.id) {
         return NextResponse.json({ error: "Not your booking" }, { status: 403 });
       }
     }
 
-    // Update booking
     const updated = await prisma.booking.update({
       where: { id },
       data: { status },

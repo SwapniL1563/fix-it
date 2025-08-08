@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { type NextApiResponse } from "next";
 
-import type { NextRequestWithAuth } from "next-auth/middleware";
-import type { RouteHandlerContext } from "next/server";
+type RouteContext = {
+  params: {
+    id: string;
+  };
+};
 
-export async function PATCH(
-  req: NextRequest,
-  context: RouteHandlerContext
-) {
-  const { id } = context.params;
+export async function PATCH(req: NextRequest, { params }: RouteContext) {
+  const { id } = params;
   const { status } = await req.json();
 
   try {
@@ -24,11 +23,8 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  context: RouteHandlerContext
-) {
-  const { id } = context.params;
+export async function DELETE(req: NextRequest, { params }: RouteContext) {
+  const { id } = params;
 
   try {
     await prisma.booking.delete({
