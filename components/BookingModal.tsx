@@ -31,9 +31,20 @@ export default function BookingModal({ technicianId, onClose, }: BookingModalPro
       } else {
         toast.error("Failed to initiate payment");
       }
-    } catch (error) {
-      console.error("Booking failed", error);
-      toast.error("Booking failed");
+    } catch (error:any) {
+       console.error("Booking failed:", error);
+      if (error.response) {
+      console.error("Error response data:", error.response.data);
+      console.error("Error response status:", error.response.status);
+      console.error("Error response headers:", error.response.headers);
+      toast.error(`Error: ${error.response.data?.message || "Booking failed"}`);
+     } else if (error.request) {
+    console.error("No response received. Request details:", error.request);
+    toast.error("No response from server");
+    } else {
+    console.error("Unexpected error:", error.message);
+    toast.error(`Error: ${error.message}`);
+    }
     } finally {
       setLoading(false);
     }
