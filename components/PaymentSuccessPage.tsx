@@ -14,18 +14,21 @@ export default function PaymentSuccessPage() {
     if (!bookingId) return;
 
     const checkStatus = async () => {
-      try {
-        await new Promise((res) => setTimeout(res, 2000));
-        const res = await axios.get(`/api/bookings/${bookingId}/status`);
-        if (res.data.paymentStatus === "PAID") {
-          setStatus("paid");
-        } else {
-          setStatus("unpaid");
+      let attempts = 0;
+      while (attempts < 6) { // ⏳ retry up to 12 seconds
+        try {
+          const res = await axios.get(`/api/bookings/${bookingId}/status`);
+          if (res.data.paymentStatus === "PAID") {
+            setStatus("paid");
+            return;
+          }
+        } catch (err) {
+          console.error("Error fetching booking status", err);
         }
-      } catch (err) {
-        console.error("Error fetching booking status", err);
-        setStatus("unpaid");
+        attempts++;
+        await new Promise((res) => setTimeout(res, 2000));
       }
+      setStatus("unpaid");
     };
 
     checkStatus();
@@ -39,9 +42,7 @@ export default function PaymentSuccessPage() {
     <div className="flex flex-col items-center mt-10 space-y-4">
       {status === "paid" ? (
         <>
-          <h1 className="text-xl font-bold text-green-500">
-            Payment successful!
-          </h1>
+          <h1 className="text-xl font-bold text-green-500">Payment successful!</h1>
           <button
             onClick={() => router.push("/dashboard/customer")}
             className="bg-[#ff7600] font-medium text-black px-4 py-2 rounded"
