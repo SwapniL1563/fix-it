@@ -65,25 +65,28 @@ export async function POST(req: Request) {
     console.info("✅ Booking created:", booking);
 
     // Create Stripe Checkout Session
-    // Inside stripe.checkout.sessions.create
-    const checkoutSession = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: [
+   const checkoutSession = await stripe.checkout.sessions.create({
+  payment_method_types: ["card"],
+  mode: "payment",
+  line_items: [
     {
       price_data: {
         currency: "inr",
         product_data: {
-          name: `Booking with ${technician.user.name} (${technician.service.name})`,
+          name: `Booking with ${technician.user.name}`,
+          description: booking.description || "FixIt technician booking",
         },
-        unit_amount: technician.service.price * 100, // convert INR to paise
+        unit_amount: technician.service.price * 100, 
       },
       quantity: 1,
     },
-    ],
-    mode: "payment",
-     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success?bookingId=${booking.id}`,
-     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel`,
-   });
+  ],
+  metadata: {
+    bookingId: booking.id, // store it here for webhook
+  },
+  success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success?bookingId=${booking.id}`,
+  cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel?bookingId=${booking.id}`,
+});
 
 
     console.info("💳 Stripe Checkout Session created:", checkoutSession.id);
