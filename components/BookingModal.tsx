@@ -1,88 +1,66 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 
-interface BookingModalProps {
-  technicianId: string;
-  onClose: () => void;
-  onBooked?: () => void; 
-}
-
-export default function BookingModal({ technicianId, onClose, }: BookingModalProps) {
+export default function BookingModal({ technicianId, onClose }: { technicianId: string; onClose: () => void }) {
+  const [loading, setLoading] = useState(false);
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const createBooking = async () => {
-    if (!date) return toast.error("Select date & time");
+  async function handleBooking() {
+    console.log("📌 Booking request initiated");
+    setLoading(true);
 
     try {
-      setLoading(true);
-      const res = await axios.post("/api/bookings", {
-        technicianId,
-        date,
-        description,
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          technicianId,
+          date,
+          description,
+        }),
       });
 
-      if (res.data.checkoutUrl) {
-        window.location.href = res.data.checkoutUrl; // FIXED
-      } else {
-        toast.error("Failed to initiate payment");
+      const data = await res.json();
+      console.log("📋 Booking API response:", data);
+
+      if (!res.ok) {
+        throw new Error(data.error || "Booking failed");
       }
-    } catch (error:any) {
-       console.error("Booking failed:", error);
-      if (error.response) {
-      console.error("Error response data:", error.response.data);
-      console.error("Error response status:", error.response.status);
-      console.error("Error response headers:", error.response.headers);
-      toast.error(`Error: ${error.response.data?.message || "Booking failed"}`);
-     } else if (error.request) {
-    console.error("No response received. Request details:", error.request);
-    toast.error("No response from server");
-    } else {
-    console.error("Unexpected error:", error.message);
-    toast.error(`Error: ${error.message}`);
-    }
+
+      toast.success("Booking created. Redirecting to payment...");
+      if (data.url) {
+        console.log("💳 Redirecting to Stripe Checkout:", data.url);
+        window.location.href = data.url;
+      } else {
+        console.warn("⚠️ No checkout URL returned");
+      }
+    } catch (err: any) {
+      console.error("❌ Booking modal error:", err);
+      toast.error(`Booking failed: ${err.message}`);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
-    <div className="fixed inset-0 bg-black/90 flex justify-center items-center z-50">
-      <div className="bg-[#0b0b0b] p-6 rounded-lg border shadow-lg w-full max-w-md">
-        <h2 className="text-lg font-bold mb-4">Book Appointment</h2>
-
-        <h2 className="text-gray-400 mb-2">Select Date & Time:</h2>
-        <input title="date"
-          type="datetime-local"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="border p-2 w-full mb-3 text-gray-400 outline-none custom-datetime"
-        />
-
-        <textarea
-          placeholder="Specify the issue or problem occurred"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="border p-2 w-full mb-3 outline-none"
-        />
-
-        <div className="flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 border rounded">
-            Cancel
-          </button>
-          <button
-            onClick={createBooking}
-            disabled={loading}
-            className="px-4 py-2 bg-[#ff7600] hover:bg-[#ff6a00] text-black font-medium rounded"
-          >
-            {loading ? "Redirecting..." : "Confirm & Pay"}
-          </button>
-        </div>
-      </div>
+    <div className="modal">
+      <input
+        type="datetime-local"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+      />
+      <textarea
+        value={description}
+        placeholder="Describe your issue"
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <button onClick={handleBooking} disabled={loading}>
+        {loading ? "Processing..." : "Confirm & Pay"}
+      </button>
+      <button onClick={onClose}>Cancel</button>
     </div>
   );
 }
