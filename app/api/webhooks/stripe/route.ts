@@ -4,56 +4,46 @@ import { prisma } from "@/lib/prisma";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-export const config = {
-  api: {
-    bodyParser: false, // important for Stripe signature verification
-  },
-};
-
 export async function POST(req: NextRequest) {
   const sig = req.headers.get("stripe-signature");
-
   if (!sig) {
-    return NextResponse.json({ error: "Missing Stripe signature" }, { status: 400 });
+    return NextResponse.json({ error: "Missing signature" }, { status: 400 });
   }
 
   let event: Stripe.Event;
-  try {
-    const rawBody = await req.arrayBuffer();
-    const textBody = Buffer.from(rawBody).toString("utf8");
 
+  try {
+    // ✅ Important: Use req.text() in App Router to get raw body
+    const rawBody = await req.text();
     event = stripe.webhooks.constructEvent(
-      textBody,
+      rawBody,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
-  } catch (err) {
-    console.error("❌ Error verifying Stripe signature:", err);
-    return NextResponse.json({ error: "Invalid Stripe signature" }, { status: 400 });
+  } catch (err: any) {
+    console.error("Webhook signature verification failed.", err.message);
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  try {
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object as Stripe.Checkout.Session;
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object as Stripe.Checkout.Session;
+    const bookingId = session.metadata?.bookingId;
 
-      const bookingId = session.metadata?.bookingId;
-      if (!bookingId) {
-        console.error("❌ No bookingId in Stripe metadata");
-        return NextResponse.json({ error: "Booking ID missing" }, { status: 400 });
-      }
+    if (!bookingId) {
+      console.error("No bookingId in metadata");
+      return NextResponse.json({ error: "Missing bookingId" }, { status: 400 });
+    }
 
-      // Mark booking as paid
+    try {
       await prisma.booking.update({
         where: { id: bookingId },
         data: { paymentStatus: "PAID" },
       });
-
-      console.log(`✅ Booking ${bookingId} marked as PAID`);
+      console.log(`Booking ${bookingId} marked as PAID`);
+    } catch (err) {
+      console.error("Error updating booking status:", err);
     }
-
-    return NextResponse.json({ received: true });
-  } catch (err) {
-    console.error("❌ Error handling Stripe webhook:", err);
-    return NextResponse.json({ error: "Webhook handling failed" }, { status: 500 });
   }
+
+  return NextResponse.json({ received: true });
 }
