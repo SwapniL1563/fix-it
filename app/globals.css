@@ -126,18 +126,15 @@
   }
 }
 
-/* Change calendar/clock icon color */
 .custom-datetime::-webkit-calendar-picker-indicator {
   filter: invert(56%) sepia(98%) saturate(2987%) hue-rotate(359deg) brightness(104%) contrast(105%);
   cursor: pointer;
 }
 
-/* Optional: hover effect for icon */
 .custom-datetime::-webkit-calendar-picker-indicator:hover {
   filter: invert(70%) sepia(98%) saturate(2500%) hue-rotate(359deg) brightness(105%) contrast(105%);
 }
 
-/* Firefox (no direct icon style support, but forces text color) */
 .custom-datetime {
   color-scheme: dark;
 }

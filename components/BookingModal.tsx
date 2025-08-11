@@ -10,8 +10,6 @@ export default function BookingModal({ technicianId, onClose }: { technicianId: 
 
   async function handleConfirmAndPay() {
     setLoading(true);
-    console.log("📌 Creating booking...");
-
     try {
       const res = await fetch("/api/bookings", {
         method: "POST",
@@ -24,7 +22,6 @@ export default function BookingModal({ technicianId, onClose }: { technicianId: 
       });
 
       const data = await res.json();
-      console.log("📋 Booking API response:", data);
 
       if (!res.ok) throw new Error(data.error || "Booking creation failed");
 
@@ -41,30 +38,34 @@ export default function BookingModal({ technicianId, onClose }: { technicianId: 
   }
 
   return (
-    <div className="modal">
+      <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+      <div className="bg-[#0b0b0b] px-9 py-8 rounded border shadow-lg  md:w-1/3">
+      <h2 className="text-lg font-bold mb-5">Book your appointment</h2>
+      <p className="text-sm text-neutral-400 mb-3">Select Date and Time:</p>
       <input
         type="datetime-local"
         value={date}
         onChange={(e) => setDate(e.target.value)}
-        className="border p-2"
+        className="border p-3 custom-datetime w-full rounded mb-1"
       />
       <textarea
         placeholder="Describe the issue"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        className="border p-2 mt-2"
+        className="border p-3 mt-2 w-full rounded"
       />
-      <div className="flex gap-2 mt-4">
+      <div className="flex flex-col md:flex-row gap-2 mt-2">
         <button
           onClick={handleConfirmAndPay}
           disabled={loading}
-          className="bg-[#ff7600] px-4 py-2 rounded text-black font-medium"
+          className="bg-[#ff7600] px-4 py-2 rounded text-black font-medium md:w-1/2"
         >
           {loading ? "Processing..." : "Confirm & Pay"}
         </button>
-        <button onClick={onClose} className="border px-4 py-2 rounded">
+        <button onClick={onClose} className="border px-4 py-2 rounded md:w-1/2">
           Cancel
         </button>
+      </div>
       </div>
     </div>
   );
