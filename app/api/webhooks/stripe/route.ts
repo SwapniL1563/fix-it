@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 export const config = {
   api: {
-    bodyParser: false, // ✅ Important for Stripe
+    bodyParser: false, 
   },
 };
 
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    const rawBody = await req.text(); // ✅ Raw body for signature check
+    const rawBody = await req.text(); 
     event = stripe.webhooks.constructEvent(
       rawBody,
       sig,
@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  // ✅ Handle checkout success
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const bookingId = session.metadata?.bookingId;
@@ -44,7 +43,7 @@ export async function POST(req: NextRequest) {
     try {
       await prisma.booking.update({
         where: { id: bookingId },
-        data: { paymentStatus: "PAID", status: "CONFIRMED" }, // optional: update booking status too
+        data: { paymentStatus: "PAID" }, 
       });
       console.log(`✅ Booking ${bookingId} marked as PAID`);
     } catch (err) {
