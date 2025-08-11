@@ -8,9 +8,9 @@ export default function BookingModal({ technicianId, onClose }: { technicianId: 
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
 
-  async function handleBooking() {
-    console.log("📌 Booking request initiated");
+  async function handleConfirmAndPay() {
     setLoading(true);
+    console.log("📌 Creating booking...");
 
     try {
       const res = await fetch("/api/bookings", {
@@ -26,20 +26,15 @@ export default function BookingModal({ technicianId, onClose }: { technicianId: 
       const data = await res.json();
       console.log("📋 Booking API response:", data);
 
-      if (!res.ok) {
-        throw new Error(data.error || "Booking failed");
-      }
+      if (!res.ok) throw new Error(data.error || "Booking creation failed");
 
-      toast.success("Booking created. Redirecting to payment...");
-      if (data.url) {
-        console.log("💳 Redirecting to Stripe Checkout:", data.url);
-        window.location.href = data.url;
-      } else {
-        console.warn("⚠️ No checkout URL returned");
-      }
+      if (!data.url) throw new Error("No Stripe Checkout URL returned");
+
+      toast.success("Redirecting to payment...");
+      window.location.href = data.url; 
     } catch (err: any) {
-      console.error("❌ Booking modal error:", err);
-      toast.error(`Booking failed: ${err.message}`);
+      console.error("❌ BookingModal error:", err);
+      toast.error(err.message || "Booking failed");
     } finally {
       setLoading(false);
     }
@@ -51,16 +46,26 @@ export default function BookingModal({ technicianId, onClose }: { technicianId: 
         type="datetime-local"
         value={date}
         onChange={(e) => setDate(e.target.value)}
+        className="border p-2"
       />
       <textarea
+        placeholder="Describe the issue"
         value={description}
-        placeholder="Describe your issue"
         onChange={(e) => setDescription(e.target.value)}
+        className="border p-2 mt-2"
       />
-      <button onClick={handleBooking} disabled={loading}>
-        {loading ? "Processing..." : "Confirm & Pay"}
-      </button>
-      <button onClick={onClose}>Cancel</button>
+      <div className="flex gap-2 mt-4">
+        <button
+          onClick={handleConfirmAndPay}
+          disabled={loading}
+          className="bg-[#ff7600] px-4 py-2 rounded text-black font-medium"
+        >
+          {loading ? "Processing..." : "Confirm & Pay"}
+        </button>
+        <button onClick={onClose} className="border px-4 py-2 rounded">
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }

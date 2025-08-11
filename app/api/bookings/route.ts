@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import {  prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     console.info("📋 Booking request body:", body);
 
-    // Ensure date is valid ISO format
+    // Validate date
     const dateObj = new Date(body.date);
     if (isNaN(dateObj.getTime())) {
       console.error("❌ Invalid date format:", body.date);
@@ -32,10 +32,13 @@ export async function POST(req: Request) {
     }
     const isoDate = dateObj.toISOString();
 
-    // Verify technician exists
+    // Fetch technician and their service with price
     const technician = await prisma.technician.findUnique({
       where: { id: body.technicianId },
-      include: { user: true },
+      include: {
+        user: true,
+        service: true, // 👈 This pulls in service name & price
+      },
     });
     console.info("👨‍🔧 Technician lookup result:", technician);
 
@@ -46,7 +49,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // Create booking
+    const priceInCents = technician.service.price * 100; // Stripe uses cents
+    console.info(`💰 Service Price: ${technician.service.price} (${priceInCents} cents)`);
+
+    // Create booking in DB
     const booking = await prisma.booking.create({
       data: {
         technicianId: body.technicianId,
@@ -59,24 +65,26 @@ export async function POST(req: Request) {
     console.info("✅ Booking created:", booking);
 
     // Create Stripe Checkout Session
+    // Inside stripe.checkout.sessions.create
     const checkoutSession = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: `Booking with ${technician.user.name}`,
-            },
-            unit_amount: 5000, // in cents, change to dynamic price if needed
-          },
-          quantity: 1,
+    payment_method_types: ["card"],
+    line_items: [
+    {
+      price_data: {
+        currency: "inr",
+        product_data: {
+          name: `Booking with ${technician.user.name} (${technician.service.name})`,
         },
-      ],
-      mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?bookingId=${booking.id}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`,
-    });
+        unit_amount: technician.service.price * 100, // convert INR to paise
+      },
+      quantity: 1,
+    },
+    ],
+    mode: "payment",
+     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success?bookingId=${booking.id}`,
+     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel`,
+   });
+
 
     console.info("💳 Stripe Checkout Session created:", checkoutSession.id);
 
@@ -91,52 +99,5 @@ export async function POST(req: Request) {
       { error: "Booking failed", details: error.message },
       { status: 500 }
     );
-  }
-}
-
-
-export async function PATCH(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { id, status } = await req.json();
-
-  try {
-    const booking = await prisma.booking.findUnique({ where: { id } });
-
-    if (!booking) {
-      return NextResponse.json({ error: "Booking not found" }, { status: 404 });
-    }
-
-    if (session.user.role === "CUSTOMER") {
-      if (booking.customerId !== session.user.id) {
-        return NextResponse.json({ error: "Not your booking" }, { status: 403 });
-      }
-      if (status !== "CANCELLED" || booking.status !== "PENDING") {
-        return NextResponse.json({ error: "Invalid cancellation request" }, { status: 400 });
-      }
-    }
-
-    if (session.user.role === "TECHNICIAN") {
-      const tech = await prisma.technician.findUnique({
-        where: { userId: session.user.id },
-      });
-
-      if (!tech || booking.technicianId !== tech.id) {
-        return NextResponse.json({ error: "Not your booking" }, { status: 403 });
-      }
-    }
-
-    const updated = await prisma.booking.update({
-      where: { id },
-      data: { status },
-    });
-
-    return NextResponse.json(updated);
-  } catch (err) {
-    console.error("Failed to update booking:", err);
-    return NextResponse.json({ error: "Failed to update booking" }, { status: 500 });
   }
 }
