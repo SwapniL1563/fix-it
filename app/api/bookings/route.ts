@@ -109,7 +109,7 @@ export async function GET() {
         },
         review: true,
       },
-      orderBy: { date: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json(bookings);
