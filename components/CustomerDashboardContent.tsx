@@ -11,13 +11,35 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { BookingCardSkeleton, TechnicianCardSkeleton } from "./SkeletonLoaderTechnicianCard";
 
+interface Booking {
+  id: string;
+  date: string;
+  description: string;
+  status: string;
+  paymentStatus: string;
+  technician: {
+    id: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      city: string;
+      address: string;
+    };
+    service: {
+      name: string;
+    };
+  };
+  review?: { id: string } | null;
+}
+
 export default function CustomerDashboardContent() {
   const [technicians, setTechnicians] = useState<unknown[]>([]);
   const [services, setServices] = useState<unknown[]>([]);
   const [filters, setFilters] = useState({ serviceId: "", search: "" });
   const [loading, setLoading] = useState(false);
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
-  const [bookings, setBookings] = useState<unknown[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [bookingsLoading, setBookingsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");

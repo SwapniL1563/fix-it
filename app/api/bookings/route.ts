@@ -8,20 +8,16 @@ import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: Request) {
-  console.info("📌 [POST /api/bookings] Incoming request");
 
   try {
     const session = await getServerSession(authOptions);
-    console.info("🔍 Session data:", session);
 
     if (!session || session.user.role !== "CUSTOMER") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
-    console.info("📋 Booking request body:", body);
 
-    // Validate date
     const dateObj = new Date(body.date);
     if (isNaN(dateObj.getTime())) {
       console.error("❌ Invalid date format:", body.date);
@@ -32,15 +28,13 @@ export async function POST(req: Request) {
     }
     const isoDate = dateObj.toISOString();
 
-    // Fetch technician and their service with price
     const technician = await prisma.technician.findUnique({
       where: { id: body.technicianId },
       include: {
         user: true,
-        service: true, // 👈 This pulls in service name & price
+        service: true, 
       },
     });
-    console.info("👨‍🔧 Technician lookup result:", technician);
 
     if (!technician) {
       return NextResponse.json(
@@ -49,10 +43,6 @@ export async function POST(req: Request) {
       );
     }
 
-    const priceInCents = technician.service.price * 100; // Stripe uses cents
-    console.info(`💰 Service Price: ${technician.service.price} (${priceInCents} cents)`);
-
-    // Create booking in DB
     const booking = await prisma.booking.create({
       data: {
         technicianId: body.technicianId,
@@ -62,13 +52,11 @@ export async function POST(req: Request) {
         status: "PENDING",
       },
     });
-    console.info("✅ Booking created:", booking);
 
-    // Create Stripe Checkout Session
-   const checkoutSession = await stripe.checkout.sessions.create({
-  payment_method_types: ["card"],
-  mode: "payment",
-  line_items: [
+    const checkoutSession = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    mode: "payment",
+    line_items: [
     {
       price_data: {
         currency: "inr",
@@ -80,16 +68,13 @@ export async function POST(req: Request) {
       },
       quantity: 1,
     },
-  ],
-  metadata: {
-    bookingId: booking.id, // store it here for webhook
-  },
-  success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success?bookingId=${booking.id}`,
-  cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel?bookingId=${booking.id}`,
-});
-
-
-    console.info("💳 Stripe Checkout Session created:", checkoutSession.id);
+     ],
+    metadata: {
+    bookingId: booking.id, 
+    },
+   success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success?bookingId=${booking.id}`,
+   cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel?bookingId=${booking.id}`,
+    });
 
     return NextResponse.json({ url: checkoutSession.url });
   } catch (error: any) {
@@ -100,6 +85,38 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(
       { error: "Booking failed", details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || session.user.role !== "CUSTOMER") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const bookings = await prisma.booking.findMany({
+      where: { customerId: session.user.id },
+      include: {
+        technician: {
+          include: {
+            user: true,
+            service: true,
+          },
+        },
+        review: true,
+      },
+      orderBy: { date: "desc" },
+    });
+
+    return NextResponse.json(bookings);
+  } catch (error: any) {
+    console.error("❌ Error fetching bookings:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch bookings", details: error.message },
       { status: 500 }
     );
   }

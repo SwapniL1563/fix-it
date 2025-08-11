@@ -1,4 +1,3 @@
-// app/api/webhooks/stripe/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
@@ -45,7 +44,6 @@ export async function POST(req: NextRequest) {
         where: { id: bookingId },
         data: { paymentStatus: "PAID" }, 
       });
-      console.log(`✅ Booking ${bookingId} marked as PAID`);
     } catch (err) {
       console.error("❌ Error updating booking:", err);
       return NextResponse.json({ error: "DB update failed" }, { status: 500 });

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-export default function BookingModal({ technicianId, onClose }: { technicianId: string; onClose: () => void }) {
+export default function BookingModal({ technicianId, onClose }: { technicianId: string; onClose: () => void ,   onBooked:() => void}) {
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
