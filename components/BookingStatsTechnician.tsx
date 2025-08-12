@@ -1,5 +1,27 @@
 "use client";
 
+interface Booking {
+  id: string;
+  date: string;
+  description: string;
+  status: string;
+  paymentStatus: string;
+  technician: {
+    id: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      city: string;
+      address: string;
+    };
+    service: {
+      name: string;
+    };
+  };
+  review?: { id: string } | null;
+}
+
 interface TechnicianStatsProps {
   bookings: Booking[];
 }

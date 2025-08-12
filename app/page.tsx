@@ -40,7 +40,7 @@ export default function Home() {
       </section>
 
       <section id="services" className="py-16 relative bg-[#020202]">
-        <h2 className="text-[1.65rem] md:text-[1.75rem] font-bold text-center mb-4 md:mb-8 text-white">Services We Provide</h2>
+        <h2 className="text-[1.45rem] md:text-[1.75rem] font-bold text-center mb-5 md:mb-8 text-white">Services We Provide</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 md:gap-3 w-[90%] md:max-w-5xl mx-auto z-20">
           {[
             { name: "Plumbing", icon: "🔧" },
@@ -61,7 +61,7 @@ export default function Home() {
       </section>
 
       <section id="work" className="pt-10 pb-8 md:px-6 text-center bg-[#020202]">
-        <h2 className="text-[1.65rem] md:text-[1.75rem] font-bold mb-4 md:mb-8 text-white">How It Works</h2>
+        <h2 className="text-[1.45rem] md:text-[1.75rem] font-bold mb-5 md:mb-8 text-white">How It Works</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 w-[90%] max-w-5xl mx-auto ">
           {[ {  step: "1", title: "Book Your Service", desc: "Select the service type, describe your issue, and choose your location to initiate a service request."},
              {  step: "2", title: "Secure Payment", desc: "Complete the payment securely. Once done, your request is confirmed and queued for assignment."},
@@ -85,7 +85,7 @@ export default function Home() {
 
       <section id="contact" className="text-center pt-8 pb-4 md:pt-7 md:pb-5 bg-[#020202] flex justify-center items-center">
         <div className="w-[90%] md:w-2/3 p-8 md:p-12 bg-neutral-950/10 border rounded-md flex flex-col justify-center items-center">
-          <h2 className="md:text-[1.5rem] font-bold text-white md:w-[70%] text-center">
+          <h2 className="text-[1rem] md:text-[1.5rem] font-semibold text-white md:w-[70%] text-center">
           Ready to book your first service? Wanna Experience Professional Service that meets your need
         </h2>
         <Link

@@ -15,7 +15,7 @@ export default function PaymentSuccessPage() {
 
     const checkStatus = async () => {
       let attempts = 0;
-      while (attempts < 6) { // ⏳ retry up to 12 seconds
+      while (attempts < 6) {
         try {
           const res = await axios.get(`/api/bookings/${bookingId}/status`);
           if (res.data.paymentStatus === "PAID") {

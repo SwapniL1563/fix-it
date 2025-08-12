@@ -27,7 +27,6 @@ export async function DELETE(req: NextRequest, context: { params: Promise<{ id: 
       );
     }
 
-    // Cascade delete if force is true
     if (force) {
       await prisma.booking.deleteMany({ where: { customerId: id } });
     }

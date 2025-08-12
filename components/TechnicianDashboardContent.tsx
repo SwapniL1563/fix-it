@@ -24,6 +24,8 @@ interface Booking {
   };
 }
 
+
+
 export default function TechnicianDashboardContent() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
