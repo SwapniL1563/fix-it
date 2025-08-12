@@ -94,30 +94,67 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || session.user.role !== "CUSTOMER") {
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    let whereClause: any = {};
+    if (session.user.role === "CUSTOMER") {
+      whereClause.customerId = session.user.id;
+    } else if (session.user.role === "TECHNICIAN") {
+      const tech = await prisma.technician.findUnique({
+        where: { userId: session.user.id },
+      });
+
+      if (!tech) {
+        return NextResponse.json({ bookings: [], avgRating: "0" });
+      }
+
+      whereClause.technicianId = tech.id;
+    }
+
     const bookings = await prisma.booking.findMany({
-      where: { customerId: session.user.id },
+      where: whereClause,
       include: {
-        technician: {
-          include: {
-            user: true,
-            service: true,
+        customer: {
+          select: {
+            name: true,
+            email: true,
+            address: true,
+            city: true,
           },
         },
-        review: true,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
-    return NextResponse.json(bookings);
-  } catch (error: any) {
-    console.error("❌ Error fetching bookings:", error);
+    let avgRating = "0";
+    if (session.user.role === "TECHNICIAN") {
+      const reviews = await prisma.review.findMany({
+        where: {
+          booking: {
+            technicianId: whereClause.technicianId,
+          },
+        },
+        select: { rating: true },
+      });
+
+      if (reviews.length > 0) {
+        const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+        avgRating = (sum / reviews.length).toFixed(1);
+      }
+    }
+
+    return NextResponse.json({ bookings, avgRating });
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
     return NextResponse.json(
-      { error: "Failed to fetch bookings", details: error.message },
+      { error: "Failed to fetch bookings" },
       { status: 500 }
     );
   }
 }
+
+

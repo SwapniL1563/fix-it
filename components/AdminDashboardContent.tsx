@@ -69,6 +69,15 @@ export default function AdminDashboardContent() {
   const [bookingSearch, setBookingSearch] = useState("");
   const { data:session } = useSession();
 
+  const fetchUsers = async () => {
+    try {
+      const res = await axios.get("/api/admin/users");
+      setUsers(res.data)
+    } catch (err) {
+      console.error("Error fetching technicians", err);
+    } 
+  }
+
   const fetchTechnicians = async () => {
   setLoadingTechnicians(true);
   try {
@@ -94,6 +103,7 @@ export default function AdminDashboardContent() {
   };
 
   useEffect(() => {
+  fetchUsers();
   fetchTechnicians();
   fetchBookings();
   }, []);

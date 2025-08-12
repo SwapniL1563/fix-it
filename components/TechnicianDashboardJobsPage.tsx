@@ -13,6 +13,7 @@ interface Booking {
   date: string;
   description: string;
   status: string;
+  paymentStatus:string;
   customer: {
     name: string;
     email: string;
@@ -65,7 +66,7 @@ export default function TechnicianDashboardJobsPage() {
   };
 
   const assignedJobs = bookings.filter(
-    (b) => b.status === "ACCEPTED" || b.status === "COMPLETED"
+    (b) => b.status === "ACCEPTED" || b.status === "COMPLETED" || b.status === "PENDING"
   );
 
   const filteredBookings = assignedJobs.filter((item) => {
@@ -107,6 +108,7 @@ export default function TechnicianDashboardJobsPage() {
               description={item.description}
               date={item.date}
               status={item.status}
+              paymentStatus={item.paymentStatus}
               customer={item.customer}
               onUpdateStatus={updateBookingStatus}
             />
