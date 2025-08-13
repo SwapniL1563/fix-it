@@ -75,9 +75,11 @@ export default function CustomerDashboardContent() {
     setBookingsLoading(true);
     try {
       const res = await axios.get("/api/bookings");
-      setBookings(res.data);
+      const data = Array.isArray(res.data.bookings) ? res.data.bookings : [];
+      setBookings(data);
     } catch (error) {
       console.error("Error fetching bookings", error);
+       setBookings([]); 
     } finally {
       setBookingsLoading(false);
     }
@@ -94,12 +96,16 @@ export default function CustomerDashboardContent() {
   }, []);
 
   const filteredBookings = bookings.filter((item) => {
-    return (
-      (statusFilter === "" || item.status === statusFilter) &&
-      (item.technician.user.name.toLowerCase().includes(search.toLowerCase()) ||
-        item.technician.user.city.toLowerCase().includes(search.toLowerCase()))
-    );
-  });
+  const name = item.technician?.user?.name || "";
+  const city = item.technician?.user?.city || "";
+
+  return (
+    (statusFilter === "" || item.status === statusFilter) &&
+    (name.toLowerCase().includes(search.toLowerCase()) ||
+      city.toLowerCase().includes(search.toLowerCase()))
+  );
+});
+
 
   const handleCancelClick = (id: string) => {
     setSelectedBookingId(id);
@@ -217,12 +223,12 @@ export default function CustomerDashboardContent() {
                 paymentStatus={booking.paymentStatus}
                 description={booking.description}
                 service={booking.technician.service.name}
-                technician={{
-                  id: booking.technician.id,
-                  name: booking.technician.user.name,
-                  email: booking.technician.user.email,
-                  city: booking.technician.user.city,
-                  address: booking.technician.user.address,
+                 technician={{
+                 id: booking.technician?.id || "",
+                 name: booking.technician?.user?.name || "Unknown",
+                 email: booking.technician?.user?.email || "",
+                 city: booking.technician?.user?.city || "",
+                 address: booking.technician?.user?.address || "",
                 }}
                 onCancel={() => handleCancelClick(booking.id)}
                 reviewExists={!!booking.review}

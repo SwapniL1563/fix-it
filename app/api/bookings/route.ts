@@ -90,6 +90,7 @@ export async function POST(req: Request) {
   }
 }
 
+
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -99,62 +100,88 @@ export async function GET() {
     }
 
     let whereClause: any = {};
+
+    // CUSTOMER → fetch their own bookings
     if (session.user.role === "CUSTOMER") {
+      if (!session.user.id) {
+        console.error("❌ Missing session.user.id for CUSTOMER");
+        return NextResponse.json({ bookings: [], avgRating: "0" });
+      }
       whereClause.customerId = session.user.id;
-    } else if (session.user.role === "TECHNICIAN") {
+    }
+
+    // TECHNICIAN → fetch bookings for their technician profile
+    if (session.user.role === "TECHNICIAN") {
+      if (!session.user.id) {
+        console.error("❌ Missing session.user.id for TECHNICIAN");
+        return NextResponse.json({ bookings: [], avgRating: "0" });
+      }
+
       const tech = await prisma.technician.findUnique({
         where: { userId: session.user.id },
       });
 
       if (!tech) {
+        console.warn("⚠️ No technician profile found for user:", session.user.id);
         return NextResponse.json({ bookings: [], avgRating: "0" });
       }
 
       whereClause.technicianId = tech.id;
     }
 
-    const bookings = await prisma.booking.findMany({
-      where: whereClause,
-      include: {
-        customer: {
-          select: {
-            name: true,
-            email: true,
-            address: true,
-            city: true,
+    // Fetch bookings with related technician + customer
+    let bookings = [];
+    try {
+      bookings = await prisma.booking.findMany({
+        where: whereClause,
+        include: {
+          technician: {
+            include: {
+              user: {
+                select: { id: true, name: true, email: true, city: true, address: true },
+              },
+              service: { select: { name: true } },
+            },
           },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    let avgRating = "0";
-    if (session.user.role === "TECHNICIAN") {
-      const reviews = await prisma.review.findMany({
-        where: {
-          booking: {
-            technicianId: whereClause.technicianId,
+          customer: {
+            select: { id: true, name: true, email: true, address: true, city: true },
           },
+          review: { select: { id: true, rating: true } },
         },
-        select: { rating: true },
+        orderBy: { createdAt: "desc" },
       });
+    } catch (err: any) {
+      console.error("❌ Booking query failed:", err.message, err.stack);
+      return NextResponse.json({ error: "Booking query failed" }, { status: 500 });
+    }
 
-      if (reviews.length > 0) {
-        const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
-        avgRating = (sum / reviews.length).toFixed(1);
+    // Calculate average rating if TECHNICIAN
+    let avgRating = "0";
+    if (session.user.role === "TECHNICIAN" && whereClause.technicianId) {
+      try {
+        const reviews = await prisma.review.findMany({
+          where: { booking: { technicianId: whereClause.technicianId } },
+          select: { rating: true },
+        });
+
+        if (reviews.length > 0) {
+          const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+          avgRating = (sum / reviews.length).toFixed(1);
+        }
+      } catch (err: any) {
+        console.error("⚠️ Review query failed:", err.message);
       }
     }
 
     return NextResponse.json({ bookings, avgRating });
-  } catch (error) {
-    console.error("Error fetching bookings:", error);
+  } catch (error: any) {
+    console.error("❌ GET /api/bookings error:", error.message, error.stack);
     return NextResponse.json(
-      { error: "Failed to fetch bookings" },
+      { error: "Failed to fetch bookings", details: error.message },
       { status: 500 }
     );
   }
 }
+
 
 

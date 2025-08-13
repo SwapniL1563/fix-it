@@ -5,6 +5,7 @@ import axios from "axios";
 import BookingCustomerFilter from "@/components/BookingCustomerFilter";
 import BookingCardCustomer from "@/components/BookingCardCustomer";
 import { BookingCardSkeleton } from "./SkeletonLoaderTechnicianCard";
+import BookingCancelModal from "./BookingCancelModal";
 
 interface Booking {
   id: string;
@@ -33,38 +34,60 @@ export default function CustomerRecentContent() {
   const [bookingsLoading, setBookingsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
 
   const fetchBookings = async () => {
-    setBookingsLoading(true);
-    try {
-      const res = await axios.get("/api/bookings");
+  setBookingsLoading(true);
+  try {
+    const res = await axios.get("/api/bookings");
 
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-      const recentBookings = res.data.filter((booking: Booking) => {
-        return new Date(booking.date) >= sevenDaysAgo;
-      });
+    const data = Array.isArray(res.data.bookings) ? res.data.bookings : [];
 
-      setBookings(recentBookings);
-    } catch (error) {
-      console.error("Error fetching bookings", error);
-    } finally {
-      setBookingsLoading(false);
-    }
-  };
+    const recentBookings = data.filter((booking: Booking) => {
+      return new Date(booking.date) >= sevenDaysAgo;
+    });
+
+    setBookings(recentBookings);
+  } catch (error) {
+    console.error("Error fetching bookings", error);
+    setBookings([]); 
+  } finally {
+    setBookingsLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchBookings();
   }, []);
 
   const filteredBookings = bookings.filter((item) => {
-    return (
-      (statusFilter === "" || item.status === statusFilter) &&
-      (item.technician.user.name.toLowerCase().includes(search.toLowerCase()) ||
-        item.technician.user.city.toLowerCase().includes(search.toLowerCase()))
-    );
+  const name = item.technician?.user?.name || "";
+  const city = item.technician?.user?.city || "";
+
+  return (
+    (statusFilter === "" || item.status === statusFilter) &&
+    (name.toLowerCase().includes(search.toLowerCase()) ||
+      city.toLowerCase().includes(search.toLowerCase()))
+  );
   });
+
+   const handleCancelClick = (id: string) => {
+    setSelectedBookingId(id);
+    setShowConfirmModal(true);
+  };
+
+  const confirmCancel = async () => {
+    if (!selectedBookingId) return;
+    await axios.patch(`/api/bookings/${selectedBookingId}`, { status: "CANCELLED" });
+    setShowConfirmModal(false);
+    fetchBookings();
+  };
+
 
   return (
     <div className="w-full min-h-full md:p-2 py-4">
@@ -96,18 +119,25 @@ export default function CustomerRecentContent() {
               paymentStatus={booking.paymentStatus} 
               description={booking.description}
               service={booking.technician.service.name}
-              technician={{
-                id: booking.technician.id,
-                name: booking.technician.user.name,
-                email: booking.technician.user.email,
-                city: booking.technician.user.city,
-                address: booking.technician.user.address,
+               technician={{
+               id: booking.technician?.id || "",
+               name: booking.technician?.user?.name || "Unknown",
+               email: booking.technician?.user?.email || "",
+               city: booking.technician?.user?.city || "",
+               address: booking.technician?.user?.address || "",
               }}
-              onCancel={() => {}} 
+              onCancel={() => handleCancelClick(booking.id)} 
               reviewExists={!!booking.review}
             />
           ))}
         </div>
+      )}
+
+      {showConfirmModal && (
+        <BookingCancelModal
+          onConfirm={confirmCancel}
+          onClose={() => setShowConfirmModal(false)}
+        />
       )}
     </div>
   );
