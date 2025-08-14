@@ -6,6 +6,9 @@ import ToastProvider from "@/components/ToastProvider";
 export const metadata: Metadata = {
   title: "Fix It",
   description: "Reliable Home Services",
+  icons:{
+    icon:'/favicon-img.png'
+  }
 };
 
 export default function RootLayout({
