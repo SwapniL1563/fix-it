@@ -51,7 +51,7 @@ export default function Home() {
           ].map((service) => (
             <div
               key={service.name}
-              className="bg-neutral-950/10 border rounded-md shadow hover:shadow-md hover:border-[#ff7600]/30 p-8 md:p-10 text-center hover:scale-105 transition-all duration-500"
+              className="bg-neutral-950/10 border rounded-md shadow hover:shadow-md hover:border-[#ff7600]/30 p-8 md:p-10 text-center"
             >
               <div className="text-3xl md:text-4xl mb-2">{service.icon}</div>
               <h3 className="text-base md:text-lg font-semibold text-white">{service.name}</h3>
@@ -69,7 +69,7 @@ export default function Home() {
             ].map((item) => (
             <div
               key={item.step}
-              className="bg-neutral-950/10 border hover:border-[#ff7600]/30 rounded-md shadow p-8 md:p-10 hover:shadow-md sm:w-[90%] md:w-full hover:scale-105 transition-all duration-500"
+              className="bg-neutral-950/10 border hover:border-[#ff7600]/30 rounded-md shadow p-8 md:p-10 hover:shadow-md sm:w-[90%] md:w-full"
             >
               <div className="text-xl md:text-2xl font-bold text-[#ff7600] mb-2">Step {item.step}</div>
               <h3 className="md:text-lg font-semibold mb-2 text-white">{item.title}</h3>
