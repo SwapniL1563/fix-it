@@ -18,7 +18,7 @@ export default function Home() {
       </div>
 
         <h1 className="text-[1.65rem] md:text-5xl font-bold text-gray-200 max-w-3xl md:max-w-2xl leading-[2rem] md:leading-[3.5rem] z-10">
-          <span className="text-[#ff7600] ">FixIt</span> - Reliable Home Services, On Demand
+          <span className="text-[#ff7600] ">Fix It</span> - Reliable Home Services, On Demand
         </h1>
         <p className="mt-4 text-sm md:text-lg text-neutral-300 max-w-sm md:max-w-lg  mx-auto z-10">
           Connect with verified technicians for hassle-free services like plumbing, electrician and many more whenever you need them.
