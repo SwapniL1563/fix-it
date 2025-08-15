@@ -110,3 +110,7 @@ npm run dev
 ## 🔗 Deployment 
 
 Live demo: https://fix-it-phi.vercel.app/
+
+Demo Credentials:
+Customer: email:pratik@gmail.com pass:pratik123
+Technician: email:technician@test.com pass:123456
