@@ -6,6 +6,7 @@ import BookingCustomerFilter from "@/components/BookingCustomerFilter";
 import BookingCardCustomer from "@/components/BookingCardCustomer";
 import { BookingCardSkeleton } from "./SkeletonLoaderTechnicianCard";
 import BookingCancelModal from "./BookingCancelModal";
+import { NavbarButton as Button } from "@/components/ui/resizable-navbar";
 
 interface Booking {
   id: string;
@@ -36,6 +37,9 @@ export default function CustomerRecentContent() {
   const [statusFilter, setStatusFilter] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+
+  const [currentPage,setCurrentPage] = useState(1);
+  const bookingsPerPage = 9;
 
   const fetchBookings = async () => {
   setBookingsLoading(true);
@@ -88,6 +92,11 @@ export default function CustomerRecentContent() {
     fetchBookings();
   };
 
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = filteredBookings.slice(indexOfFirstBooking,indexOfLastBooking);
+  const totalPages = Math.ceil(filteredBookings.length / bookingsPerPage);
+
 
   return (
     <div className="w-full min-h-full md:p-2 py-4">
@@ -110,7 +119,7 @@ export default function CustomerRecentContent() {
         <p className="mt-4">No recent bookings</p>
       ) : (
         <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-          {filteredBookings.map((booking) => (
+          {currentBookings.map((booking) => (
             <BookingCardCustomer
               key={booking.id}
               id={booking.id}
@@ -132,6 +141,19 @@ export default function CustomerRecentContent() {
           ))}
         </div>
       )}
+
+      {
+        totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-4">
+            <Button variant="dark" disabled={currentPage === 1} onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}> Prev</Button>
+             
+            { Array.from({length:totalPages} , (_,index)=> (
+              <Button key={index} variant={currentPage === index + 1 ? "secondary" : "dark"} onClick={() => setCurrentPage(index + 1)}>{index + 1}</Button>
+            ))}
+            <Button variant="dark" disabled={currentPage === totalPages} onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}> Next</Button>
+          </div>
+        )
+      }
 
       {showConfirmModal && (
         <BookingCancelModal

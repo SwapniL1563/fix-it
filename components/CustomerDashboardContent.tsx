@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { BookingCardSkeleton, TechnicianCardSkeleton } from "./SkeletonLoaderTechnicianCard";
+import { NavbarButton as Button } from "@/components/ui/resizable-navbar"
 
 interface Booking {
   id: string;
@@ -46,6 +47,10 @@ export default function CustomerDashboardContent() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
   const { data: session } = useSession();
+
+  const [currentPage,setCurrentPage] = useState(1);
+  const bookingsPerPage = 6;
+
 
   useEffect(() => {
     axios.get("/api/services").then((res) => setServices(res.data));
@@ -104,7 +109,7 @@ export default function CustomerDashboardContent() {
     (name.toLowerCase().includes(search.toLowerCase()) ||
       city.toLowerCase().includes(search.toLowerCase()))
   );
-});
+  });
 
 
   const handleCancelClick = (id: string) => {
@@ -117,6 +122,11 @@ export default function CustomerDashboardContent() {
     await axios.patch(`/api/bookings/${selectedBookingId}`, { status: "CANCELLED" });
     fetchBookings();
   };
+
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = filteredBookings.slice(indexOfFirstBooking,indexOfLastBooking);
+  const totalPages = Math.ceil(filteredBookings.length / bookingsPerPage);
 
   return (
     <div className="w-full min-h-full md:p-1 py-2 md:py-4 relative overflow-hidden">
@@ -213,8 +223,9 @@ export default function CustomerDashboardContent() {
         ) : filteredBookings.length === 0 ? (
           <p className="mt-4">No previous bookings</p>
         ) : (
+          <>
           <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-            {filteredBookings.map((booking) => (
+            {currentBookings.map((booking) => (
               <BookingCardCustomer
                 key={booking.id}
                 id={booking.id}
@@ -235,6 +246,36 @@ export default function CustomerDashboardContent() {
               />
             ))}
           </div>
+
+
+         {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-4">
+                <Button
+                  variant="dark"
+                  disabled={currentPage === 1}
+                   onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} >
+                  « Prev
+                </Button>
+
+                {Array.from({ length: totalPages }, (item, index) => (
+                  <Button
+                    key={index}
+                    variant={currentPage === index + 1 ? "secondary" : "dark"}
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </Button>
+                ))}
+
+                <Button
+                  variant="dark"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} >
+                  Next »
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
