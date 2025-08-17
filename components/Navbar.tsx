@@ -56,7 +56,7 @@ export function NavbarDemo() {
                 setIsMobileMenuOpen(false);
                 router.push("/api/auth/signin");
               }}
-              variant="secondary"
+              variant="custom"
             >
               Login
             </NavbarButton>
@@ -65,7 +65,7 @@ export function NavbarDemo() {
                 setIsMobileMenuOpen(false);
                 router.push("/signup");
               }}
-              variant="secondary"
+              variant="custom"
             >
               Signup
             </NavbarButton>
