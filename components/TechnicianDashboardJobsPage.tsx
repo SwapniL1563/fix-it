@@ -7,6 +7,7 @@ import BookingFilter from "@/components/BookingTechnicianFilter";
 import BookingCardTechnician from "@/components/BookingCardTechnician";
 import { BookingCardSkeletonTech } from "@/components/SkeletonLoaderTechnicianCard";
 import { useSession } from "next-auth/react";
+import { NavbarButton as Button } from "./ui/resizable-navbar";
 
 interface Booking {
   id: string;
@@ -29,6 +30,8 @@ export default function TechnicianDashboardJobsPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [avgRating, setAvgRating] = useState<string>("0");
+  const [currentPage,setCurrentPage] = useState(1);
+  const bookingsPerPage = 6;
   const { data: session } = useSession();
 
   const fetchBookings = async () => {
@@ -77,6 +80,11 @@ export default function TechnicianDashboardJobsPage() {
     );
   });
 
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = filteredBookings.slice(indexOfFirstBooking,indexOfLastBooking);
+  const totalPages = Math.ceil(filteredBookings.length / bookingsPerPage);
+
   return (
     <div className="w-full min-h-full md:p-1 py-2 md:py-4 relative overflow-hidden">
       <h1 className="md:text-lg px-1 mb-2">
@@ -101,7 +109,7 @@ export default function TechnicianDashboardJobsPage() {
         <p className="mt-4">No assigned jobs yet</p>
       ) : (
         <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-          {filteredBookings.map((item) => (
+          {currentBookings.map((item) => (
             <BookingCardTechnician
               key={item.id}
               id={item.id}
@@ -115,6 +123,25 @@ export default function TechnicianDashboardJobsPage() {
           ))}
         </div>
       )}
+
+     { 
+      totalPages > 1 && (
+      <div className="flex justify-center items-center space-x-2 mt-4">
+       <Button variant="dark" onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}  disabled={currentPage === 1} >
+        Prev 
+       </Button>
+  
+       {Array.from({ length: totalPages }, (item, index) => (
+        <Button key={index} variant={currentPage === index + 1 ? "secondary" : "dark"} onClick={() => setCurrentPage(index + 1)}>
+        {index + 1}
+        </Button>
+        ))}
+  
+        <Button variant="dark" onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+         Next
+        </Button>
+        </div> )
+        }
     </div>
   );
 }
