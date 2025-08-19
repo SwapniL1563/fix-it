@@ -36,7 +36,7 @@ Built with **Next.js**, **Prisma**, and **PostgreSQL**.
     - Total users
     - Verified & pending technicians
     - Total, completed, and cancelled bookings
-  - Payement Integration using Stripe
+  - Payment Integration using Stripe
 
 ---
 
@@ -112,5 +112,11 @@ npm run dev
 Live demo: https://fix-it-phi.vercel.app/
 
 Demo Credentials:
-Customer: email:pratik@gmail.com pass:pratik123
-Technician: email:technician@test.com pass:123456
+-Customer: 
+email:pratik@gmail.com 
+pass:pratik123
+-Technician: 
+email:technician@test.com 
+pass:123456
+
+## Feel free to give feedback and suggestion.Drop a mail choratswapnil15@gmail.com 📧
