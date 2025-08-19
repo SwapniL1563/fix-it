@@ -107,15 +107,19 @@ npx prisma generate
 npm run dev
 ```
 
-## 🔗 Deployment 
+### 🔗 Deployment 
 
 Live demo: https://fix-it-phi.vercel.app/
 
 Demo Credentials:
--Customer: 
+
+Customer: 
+
 email:pratik@gmail.com 
 pass:pratik123
--Technician: 
+
+Technician: 
+
 email:technician@test.com 
 pass:123456
 
