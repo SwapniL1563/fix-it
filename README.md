@@ -1,6 +1,6 @@
 # 🛠 Fixit - Professional Services Booking Platform
 
-A full-stack web application for users where they can book verified technician providing experienced services (eg. plumbing, electrician, carpentry, repair, cleaning).
+A full-stack web application for customers where they can book verified technician providing experienced services (eg. plumbing, electrician, carpentry, repair, cleaning).
 
 Built with **Next.js**, **Prisma**, and **PostgreSQL**.
 
