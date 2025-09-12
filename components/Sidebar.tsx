@@ -126,7 +126,7 @@ export default function SidebarLayout({
       <div className="hidden md:flex">
         <Sidebar open={true} setOpen={setOpen} animate={true}>
           <SidebarBody className="justify-between gap-10">
-            <div className="flex flex-1 flex-col overflow-y-auto">
+            <div className="flex flex-1 flex-col overflow-y-auto fixed top-0 left-0 h-screen p-6">
               <Logo />
               <div className="mt-8 flex flex-col gap-2">
                 {links.map((link, idx) => (
